@@ -4,8 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_REQUESTED 4096U
-
 int main(void)
 {
     char size_text[128];
@@ -25,10 +23,8 @@ int main(void)
         return 2;
     }
     size_t requested = (size_t)parsed;
-    if (requested > SIZE_MAX - 16 || requested > MAX_REQUESTED) {
-        return 2;
-    }
 
+    /* Vulnerability: the addition can wrap before allocation. */
     size_t allocation_size = requested + 16;
     char *buffer = (char *)malloc(allocation_size);
     if (buffer == NULL) {
@@ -36,10 +32,6 @@ int main(void)
     }
 
     size_t payload_length = strlen(payload);
-    if (payload_length > allocation_size - 1) {
-        free(buffer);
-        return 2;
-    }
     memcpy(buffer, payload, payload_length + 1);
     printf("OK:%s\n", buffer);
     free(buffer);
