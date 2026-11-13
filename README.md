@@ -23,7 +23,7 @@ Evaluate an unseen patch by pointing the tool at a source directory containing i
       --candidate inih-config-bridge=path/to/unseen/source \
       --output artifacts/unseen.json
 
-The unfiltered demo intentionally evaluates incomplete and regression examples, so its project-level result is expected to be code 20: functional regressions outrank remaining security findings in the assignment's priority order. The CI workflow runs each expected status separately. Besides the JSON file, the command prints a short human-readable summary of every scenario, test verdict and hardening warning.
+The unfiltered demo intentionally evaluates incomplete and regression examples, so its project-level result is expected to be code 10: remaining security findings outrank functional regressions in the assignment's priority order. The CI workflow runs each expected status separately. Besides the JSON file, the command prints a short human-readable summary of every scenario, test verdict and hardening warning.
 
 Each test is run on baseline and candidate release and instrumented builds. Security findings are repeated three times. Each target runs in its own process group with wall-clock and CPU limits, bounded output/file size and open descriptors, and core dumps disabled. A deterministic mutator runs 32 additional inputs for each fuzz-enabled test and scenario (configurable as `fuzz_iterations`). Confirmed fuzz findings are minimized, stored as regression-corpus cases, and replayed against later candidates. Diff-correlation evidence records direct changed-line matches and nearby matches only when stack trace and Git hunk identify the same function; file paths are matched by their full path suffix rather than filename alone. Reproducer records include the original and minimized input, the executed binary's SHA-256, replay observations, source fingerprint, Git commit when available, host/compiler environment, and build/run details.
 
@@ -58,7 +58,7 @@ The fixtures are deliberately small enough to explain during a defense. The eval
 | 30 | Build or configuration error |
 | 40 | Evidence is inconclusive |
 
-The assignment's exit-code priority is 30, 20, 10, 40, then 0. For the included full suite, the intentional code-20 regression examples take priority over code 10. A passing result is returned only when all required checks pass. The JSON report retains every per-test result and finding, even when the summary exit code reflects only the highest-priority status.
+The assignment's exit-code priority is 30, 10, 20, 40, then 0. For the included full suite, the intentional code-10 security findings take priority over code-20 regression examples. A passing result is returned only when all required checks pass. The JSON report retains every per-test result and finding, even when the summary exit code reflects only the highest-priority status.
 
 ## Pipeline
 

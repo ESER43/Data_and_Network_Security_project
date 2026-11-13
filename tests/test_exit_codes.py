@@ -20,9 +20,9 @@ from patchguard.hardening import _nx_stack_from_program_headers
 
 class ExitCodePriorityTests(unittest.TestCase):
     def test_assignment_priority(self):
-        # The assignment orders simultaneous codes as 30, 20, 10, 40, 0.
+        # The assignment orders simultaneous codes as 30, 10, 20, 40, 0.
         self.assertEqual(_aggregate([30, 10, 20, 40, 0]), 30)
-        self.assertEqual(_aggregate([10, 20]), 20)
+        self.assertEqual(_aggregate([10, 20]), 10)
         self.assertEqual(_aggregate([20, 40]), 20)
         self.assertEqual(_aggregate([10, 40, 0]), 10)
         self.assertEqual(_aggregate([40, 0]), 40)

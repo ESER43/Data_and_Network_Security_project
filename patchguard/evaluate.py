@@ -22,7 +22,7 @@ from .process import build_target, run_program
 REPEAT_COUNT = 3
 # Assignment priority: build/config errors first, then functional regressions,
 # then remaining/new security findings, then inconclusive runs, then PASS.
-CODE_PRIORITY = (30, 20, 10, 40)
+CODE_PRIORITY = (30, 10, 20, 40)
 # Minimizing the same input against the same binary is deterministic, and the
 # baseline reproducer is regenerated for every scenario of a target (and for the
 # candidate of an equivalent patch), so results are memoized per binary/input.
