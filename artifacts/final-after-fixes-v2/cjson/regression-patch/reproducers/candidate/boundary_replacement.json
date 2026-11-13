@@ -1,0 +1,193 @@
+{
+  "test": "boundary_replacement",
+  "kind": "functional",
+  "test_definition": {
+    "name": "boundary_replacement",
+    "kind": "functional",
+    "stdin_file": "benchmarks/cjson/inputs/boundary.txt",
+    "expected_stdout": "OK:BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\n",
+    "expected_exit": 0
+  },
+  "source_role": "candidate",
+  "source_fingerprint": "028d85e7f11f73ebc91a44e94a7b9111987c2693be8c401367052d619098824f",
+  "git_commit": "afb672fa152fc4b15db916b1c24aa1701f7585ef",
+  "timeout_seconds": 3,
+  "resource_limits": {
+    "output_bytes": 2097152,
+    "cpu_seconds_soft": 4,
+    "core_dumps": false,
+    "open_files": 64,
+    "wall_seconds": 3.0
+  },
+  "argv": [],
+  "command": [
+    "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/build/candidate/release/target"
+  ],
+  "build_commands": {
+    "baseline": {
+      "release": [
+        "cc",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fPIE",
+        "-pie",
+        "-Wl,-z,relro,-z,now",
+        "-fstack-protector-strong",
+        "-I/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/sources/baseline-ec09832a8c61",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/sources/baseline-ec09832a8c61/patchguard_cjson_driver.c",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/sources/baseline-ec09832a8c61/cJSON.c",
+        "-o",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/build/baseline/release/target"
+      ],
+      "instrumented": [
+        "cc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fsanitize=address,undefined",
+        "-fPIE",
+        "-pie",
+        "-Wl,-z,relro,-z,now",
+        "-fstack-protector-strong",
+        "-I/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/sources/baseline-ec09832a8c61",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/sources/baseline-ec09832a8c61/patchguard_cjson_driver.c",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/sources/baseline-ec09832a8c61/cJSON.c",
+        "-o",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/build/baseline/instrumented/target"
+      ]
+    },
+    "candidate": {
+      "release": [
+        "cc",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fPIE",
+        "-pie",
+        "-Wl,-z,relro,-z,now",
+        "-fstack-protector-strong",
+        "-I/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/sources/candidate-afb672fa152f",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/sources/candidate-afb672fa152f/patchguard_cjson_driver.c",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/sources/candidate-afb672fa152f/cJSON.c",
+        "-o",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/build/candidate/release/target"
+      ],
+      "instrumented": [
+        "cc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fsanitize=address,undefined",
+        "-fPIE",
+        "-pie",
+        "-Wl,-z,relro,-z,now",
+        "-fstack-protector-strong",
+        "-I/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/sources/candidate-afb672fa152f",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/sources/candidate-afb672fa152f/patchguard_cjson_driver.c",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/sources/candidate-afb672fa152f/cJSON.c",
+        "-o",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/build/candidate/instrumented/target"
+      ]
+    }
+  },
+  "compiler_versions": {
+    "baseline": {
+      "release": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+      "instrumented": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0"
+    },
+    "candidate": {
+      "release": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+      "instrumented": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0"
+    }
+  },
+  "build_environment": {
+    "baseline": {
+      "release": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C"
+      },
+      "instrumented": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C"
+      }
+    },
+    "candidate": {
+      "release": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C"
+      },
+      "instrumented": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C"
+      }
+    }
+  },
+  "runtime_environment": {
+    "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+    "LANG": "C",
+    "LC_ALL": "C",
+    "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+    "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+  },
+  "host_environment": {
+    "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+    "system": "Linux",
+    "release": "6.8.0-147-generic",
+    "machine": "x86_64",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+  },
+  "finding": "FUNCTIONAL_REGRESSION",
+  "binary": {
+    "path": "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/build/candidate/release/target",
+    "available": true,
+    "sha256": "f582c1c6573d6dfaa82b30e947e5d91168c43b4c425de8b65d0e120290cdb356",
+    "size": 117808
+  },
+  "replay_stable": null,
+  "reproduction_count": 1,
+  "minimization_attempts": 0,
+  "original_crash_site": null,
+  "minimized_crash_site": null,
+  "crash_site_preserved": null,
+  "original_stdin_sha256": "606f62a04c5a2b810d853eca42b49f323375def97cbf7af416d29835773dc238",
+  "minimized_stdin_sha256": "606f62a04c5a2b810d853eca42b49f323375def97cbf7af416d29835773dc238",
+  "original_stdin_base64": "YXxCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCCg==",
+  "minimized_stdin_base64": "YXxCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCCg==",
+  "minimized_replay_runs": [
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/build/candidate/release/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 0,
+      "stdout": "REJECTED\n",
+      "stderr": "",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": null
+    }
+  ]
+}

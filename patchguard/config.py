@@ -23,10 +23,14 @@ def _as_number(value):
 def _as_int(value):
     if isinstance(value, bool):
         return None
-    try:
-        return int(value)
-    except (TypeError, ValueError):
-        return None
+    if isinstance(value, int):
+        return value
+    if isinstance(value, str):
+        try:
+            return int(value.strip(), 10)
+        except ValueError:
+            return None
+    return None
 
 
 def load_project(path):
@@ -36,7 +40,7 @@ def load_project(path):
     except (OSError, json.JSONDecodeError) as exc:
         raise PatchGuardError(f"cannot read project config {config_path}: {exc}") from exc
 
-    _need(data.get("schema_version") == 1, "schema_version must be 1")
+    _need(_as_int(data.get("schema_version")) == 1, "schema_version must be 1")
     _need(isinstance(data.get("targets"), list) and data["targets"], "targets must be a non-empty list")
     _need(_as_int(data.get("fuzz_seed", 2026)) is not None, "fuzz_seed must be an integer")
     _need(isinstance(data.get("regression_corpus", "regression_corpus"), str),

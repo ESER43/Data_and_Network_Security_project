@@ -11,9 +11,11 @@ from patchguard.diffing import _relative_diff_text, correlate, parse_hunks
 from patchguard.evaluate import (
     _aggregate,
     _classify_fuzz_finding,
+    _failure_matches_site,
     _evaluate_test,
     _load_regression_cases,
     _save_regression_case,
+    _write_reproducer,
 )
 from patchguard.hardening import _nx_stack_from_program_headers
 
@@ -122,6 +124,23 @@ class FuzzClassificationTests(unittest.TestCase):
         self.assertFalse(baseline_state["stable"])
         self.assertEqual(classification, "INCONCLUSIVE")
 
+    def test_stable_same_site_finding_is_classified_without_source_argument(self):
+        failure_run = {
+            "failure": {"kind": "address_sanitizer", "error_type": "heap-buffer-overflow"},
+            "stderr": "#0 0x123 in main /tmp/source/main.c:10:3",
+        }
+        baseline_runs = [dict(failure_run) for _ in range(3)]
+        candidate_runs = [dict(failure_run) for _ in range(3)]
+        diff = {"hunks": [{"path": "main.c", "old_start": 10, "old_count": 1,
+                           "new_start": 10, "new_count": 1, "header": "@@ -10 +10 @@ int main(void)"}]}
+
+        classification, _correlation, baseline_state = _classify_fuzz_finding(
+            baseline_runs, candidate_runs, diff
+        )
+
+        self.assertTrue(baseline_state["stable"])
+        self.assertEqual(classification, "VULN_REMAINS")
+
 
 class DiffCorrelationTests(unittest.TestCase):
     def test_nearby_match_requires_same_function(self):
@@ -171,6 +190,106 @@ class ConfigValidationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as root:
             project = load_project(self._project(root))
         self.assertEqual(project["targets"][0]["name"], "target")
+
+    def test_integer_fields_accept_numeric_strings_and_reject_floats(self):
+        with tempfile.TemporaryDirectory() as root:
+            path = self._project(root)
+            data = json.loads(path.read_text(encoding="utf-8"))
+            data["schema_version"] = "1"
+            data["fuzz_seed"] = "2026"
+            data["targets"][0]["fuzz_iterations"] = "3"
+            data["targets"][0]["limits"] = {"output_bytes": "4096"}
+            data["targets"][0]["tests"][0]["expected_exit"] = "0"
+            path.write_text(json.dumps(data), encoding="utf-8")
+            self.assertEqual(load_project(path)["targets"][0]["fuzz_iterations"], "3")
+
+        invalid_fields = (
+            ("schema_version", 1.7),
+            ("fuzz_seed", 1.7),
+            ("target.fuzz_iterations", 1.7),
+            ("target.limits", {"output_bytes": 1.7}),
+            ("test.expected_exit", 1.7),
+        )
+        for field, value in invalid_fields:
+            with self.subTest(field=field), tempfile.TemporaryDirectory() as root:
+                path = self._project(root)
+                data = json.loads(path.read_text(encoding="utf-8"))
+                if field.startswith("target."):
+                    data["targets"][0][field.split(".", 1)[1]] = value
+                elif field == "test.expected_exit":
+                    data["targets"][0]["tests"][0]["expected_exit"] = value
+                else:
+                    data[field] = value
+                path.write_text(json.dumps(data), encoding="utf-8")
+                with self.assertRaises(PatchGuardError):
+                    load_project(path)
+
+
+class MinimizationLocationTests(unittest.TestCase):
+    def test_minimization_match_requires_original_file_and_function(self):
+        failure = {"kind": "address_sanitizer", "error_type": "heap-buffer-overflow"}
+        with tempfile.TemporaryDirectory() as root:
+            source = Path(root)
+            expected_site = {"file": "src/worker.c", "line": 20, "function": "parse_item"}
+
+            def run(path, function):
+                return {"failure": failure,
+                        "stderr": f"#0 0x123 in {function} {source / path}:20:3"}
+
+            def locations(_diff, _stdout, stderr):
+                function = "parse_item" if "parse_item" in stderr else "different_function"
+                file = "src/worker.c" if "worker.c" in stderr else "src/other.c"
+                return {"locations": [{"path": str(source / file), "line": 20,
+                                        "function": function}]}
+
+            with patch("patchguard.evaluate.correlate", side_effect=locations):
+                self.assertTrue(_failure_matches_site(
+                    run("src/worker.c", "parse_item"), "address_sanitizer", "heap-buffer-overflow",
+                    expected_site, source,
+                ))
+                self.assertFalse(_failure_matches_site(
+                    run("src/worker.c", "different_function"), "address_sanitizer", "heap-buffer-overflow",
+                    expected_site, source,
+                ))
+                self.assertFalse(_failure_matches_site(
+                    run("src/other.c", "parse_item"), "address_sanitizer", "heap-buffer-overflow",
+                    expected_site, source,
+                ))
+
+    def test_reproducer_keeps_input_if_reduced_crash_moves_function(self):
+        failure = {"kind": "address_sanitizer", "error_type": "heap-buffer-overflow"}
+        with tempfile.TemporaryDirectory() as root:
+            source = Path(root) / "source"
+            source.mkdir()
+            (source / "main.c").write_text("int main(void) { return 0; }\n", encoding="utf-8")
+            executable = Path(root) / "target"
+            executable.write_bytes(b"fake executable")
+
+            def observed_run(executable, test, data, timeout, environment, limits):
+                function = "parse_item" if data == b"ab" else "other_function"
+                return {"failure": failure,
+                        "stderr": f"#0 0x123 in {function} {source / 'main.c'}:20:3"}
+
+            def locations(_diff, _stdout, stderr):
+                function = "parse_item" if "parse_item" in stderr else "other_function"
+                return {"locations": [{"path": str(source / "main.c"), "line": 20,
+                                        "function": function}]}
+
+            reference_runs = [observed_run(executable, {}, b"ab", 3, None, None) for _ in range(3)]
+            with patch("patchguard.evaluate.run_program", side_effect=observed_run), \
+                    patch("patchguard.evaluate.correlate", side_effect=locations), \
+                    patch("patchguard.evaluate.git_revision", return_value=None):
+                payload = _write_reproducer(
+                    Path(root) / "reproducers", {"name": "site", "kind": "security"}, b"ab",
+                    {"timeout_seconds": 3, "build": {}}, source,
+                    {"kind": failure["kind"], "error_type": failure["error_type"]}, executable,
+                    reference_runs=reference_runs,
+                )
+
+        self.assertEqual(payload["minimized_stdin_base64"], "YWI=")
+        self.assertEqual(payload["original_crash_site"]["function"], "parse_item")
+        self.assertEqual(payload["minimized_crash_site"]["function"], "parse_item")
+        self.assertTrue(payload["crash_site_preserved"])
 
 
 class DiffPathParsingTests(unittest.TestCase):

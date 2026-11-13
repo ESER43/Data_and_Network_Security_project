@@ -1,0 +1,677 @@
+{
+  "test": "addition_wrap_overflow",
+  "kind": "security",
+  "test_definition": {
+    "name": "addition_wrap_overflow",
+    "kind": "security",
+    "stdin_file": "benchmarks/capacity_reader/inputs/overflow.txt",
+    "fuzz": true
+  },
+  "source_role": "candidate",
+  "source_fingerprint": "0cb712522e1d2eca209f38b8a80e895bbd733a0b6c46925666e2c6741439a29e",
+  "git_commit": "7336cab5beee2f04a5efaef00232d35bc7476abf",
+  "timeout_seconds": 3,
+  "resource_limits": {
+    "output_bytes": 2097152,
+    "cpu_seconds_soft": 4,
+    "core_dumps": false,
+    "open_files": 64,
+    "wall_seconds": 3.0
+  },
+  "argv": [],
+  "command": [
+    "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/candidate/instrumented/target"
+  ],
+  "build_commands": {
+    "baseline": {
+      "release": [
+        "cc",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fPIE",
+        "-pie",
+        "-Wl,-z,relro,-z,now",
+        "-fstack-protector-strong",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/sources/baseline-d2a5f706740f/main.c",
+        "-o",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/baseline/release/target"
+      ],
+      "instrumented": [
+        "cc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fsanitize=address,undefined",
+        "-fPIE",
+        "-pie",
+        "-Wl,-z,relro,-z,now",
+        "-fstack-protector-strong",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/sources/baseline-d2a5f706740f/main.c",
+        "-o",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/baseline/instrumented/target"
+      ]
+    },
+    "candidate": {
+      "release": [
+        "cc",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fPIE",
+        "-pie",
+        "-Wl,-z,relro,-z,now",
+        "-fstack-protector-strong",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/sources/candidate-7336cab5beee/main.c",
+        "-o",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/candidate/release/target"
+      ],
+      "instrumented": [
+        "cc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fsanitize=address,undefined",
+        "-fPIE",
+        "-pie",
+        "-Wl,-z,relro,-z,now",
+        "-fstack-protector-strong",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/sources/candidate-7336cab5beee/main.c",
+        "-o",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/candidate/instrumented/target"
+      ]
+    }
+  },
+  "compiler_versions": {
+    "baseline": {
+      "release": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+      "instrumented": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0"
+    },
+    "candidate": {
+      "release": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+      "instrumented": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0"
+    }
+  },
+  "build_environment": {
+    "baseline": {
+      "release": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C"
+      },
+      "instrumented": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C"
+      }
+    },
+    "candidate": {
+      "release": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C"
+      },
+      "instrumented": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C"
+      }
+    }
+  },
+  "runtime_environment": {
+    "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+    "LANG": "C",
+    "LC_ALL": "C",
+    "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+    "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+  },
+  "host_environment": {
+    "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+    "system": "Linux",
+    "release": "6.8.0-147-generic",
+    "machine": "x86_64",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+  },
+  "finding": {
+    "stable": true,
+    "kind": "address_sanitizer",
+    "error_type": "requested"
+  },
+  "binary": {
+    "path": "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/candidate/instrumented/target",
+    "available": true,
+    "sha256": "617910043fdd355fa11f81e09fef270a1d73e849a37c9df0c793a99b4d5d45d9",
+    "size": 39152
+  },
+  "replay_stable": true,
+  "reproduction_count": 3,
+  "minimization_attempts": 28,
+  "original_crash_site": {
+    "file": "main.c",
+    "line": 32,
+    "function": "main"
+  },
+  "minimized_crash_site": {
+    "file": "main.c",
+    "line": 32,
+    "function": "main"
+  },
+  "crash_site_preserved": true,
+  "original_stdin_sha256": "e5291ba9bc071752ce41900f5b253de2a84473a4c34302c5eab0750782ca0888",
+  "minimized_stdin_sha256": "0d93d5bdf7634beea17a0cb76e1b0e4531a95ed819c3043b065072e547b587f4",
+  "original_stdin_base64": "MTg0NDY3NDQwNzUxNjEwCkFBQUFBQUFBQUFBQUFBQUEK",
+  "minimized_stdin_base64": "NDQ2NzQ0MDc1MTYxMAoK",
+  "minimized_replay_runs": [
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/candidate/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "=================================================================\n==103039==ERROR: AddressSanitizer: requested allocation size 0x4102838140a (0x41028382410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)\n    #0 0x7c62754fd9c7 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69\n    #1 0x640e31fff8e8 in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/sources/candidate-7336cab5beee/main.c:32\n    #2 0x7c627482a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x7c627482a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x640e31fff3c4 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/candidate/instrumented/target+0x23c4) (BuildId: 7db2ad76ff9a32253b1226ca1507d873321aaa53)\n\n==103039==HINT: if you don't care about these errors you may set allocator_may_return_null=1\nSUMMARY: AddressSanitizer: allocation-size-too-big ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69 in malloc\n==103039==ABORTING\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "address_sanitizer",
+        "error_type": "requested",
+        "summary": "ERROR: AddressSanitizer: requested allocation size 0x4102838140a (0x41028382410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)"
+      }
+    },
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/candidate/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "=================================================================\n==103040==ERROR: AddressSanitizer: requested allocation size 0x4102838140a (0x41028382410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)\n    #0 0x7c44072fd9c7 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69\n    #1 0x5f42362248e8 in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/sources/candidate-7336cab5beee/main.c:32\n    #2 0x7c440662a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x7c440662a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x5f42362243c4 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/candidate/instrumented/target+0x23c4) (BuildId: 7db2ad76ff9a32253b1226ca1507d873321aaa53)\n\n==103040==HINT: if you don't care about these errors you may set allocator_may_return_null=1\nSUMMARY: AddressSanitizer: allocation-size-too-big ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69 in malloc\n==103040==ABORTING\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "address_sanitizer",
+        "error_type": "requested",
+        "summary": "ERROR: AddressSanitizer: requested allocation size 0x4102838140a (0x41028382410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)"
+      }
+    },
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/candidate/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "=================================================================\n==103041==ERROR: AddressSanitizer: requested allocation size 0x4102838140a (0x41028382410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)\n    #0 0x7bea5befd9c7 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69\n    #1 0x628098a248e8 in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/sources/candidate-7336cab5beee/main.c:32\n    #2 0x7bea5b22a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x7bea5b22a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x628098a243c4 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/candidate/instrumented/target+0x23c4) (BuildId: 7db2ad76ff9a32253b1226ca1507d873321aaa53)\n\n==103041==HINT: if you don't care about these errors you may set allocator_may_return_null=1\nSUMMARY: AddressSanitizer: allocation-size-too-big ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69 in malloc\n==103041==ABORTING\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "address_sanitizer",
+        "error_type": "requested",
+        "summary": "ERROR: AddressSanitizer: requested allocation size 0x4102838140a (0x41028382410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)"
+      }
+    }
+  ],
+  "classification": "VULN_REMAINS",
+  "correlation": {
+    "related": true,
+    "evidence_level": "nearby",
+    "locations": [
+      {
+        "path": "../../../../src/libsanitizer/asan/asan_malloc_linux.cpp",
+        "line": 69,
+        "function": "malloc"
+      },
+      {
+        "path": "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/sources/baseline-d2a5f706740f/main.c",
+        "line": 29,
+        "function": "main"
+      },
+      {
+        "path": "r: allocation-size-too-big ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp",
+        "line": 69,
+        "function": null
+      }
+    ],
+    "matches": [
+      {
+        "location": {
+          "path": "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/sources/baseline-d2a5f706740f/main.c",
+          "line": 29,
+          "function": "main"
+        },
+        "hunk": "@@ -27 +27,4 @@ int main(void)",
+        "path": "main.c",
+        "hunk_function": "main",
+        "same_function": true,
+        "relation": "nearby_line"
+      }
+    ],
+    "failure_kind": "address_sanitizer",
+    "error_type": "requested"
+  },
+  "baseline_state": {
+    "stable": true,
+    "kind": "address_sanitizer",
+    "error_type": "requested"
+  },
+  "baseline_runs": [
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/baseline/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "=================================================================\n==103042==ERROR: AddressSanitizer: requested allocation size 0x4102838140a (0x41028382410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)\n    #0 0x7e825defd9c7 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69\n    #1 0x5c974756b8dd in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/sources/baseline-d2a5f706740f/main.c:29\n    #2 0x7e825d22a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x7e825d22a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x5c974756b3c4 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/baseline/instrumented/target+0x23c4) (BuildId: 5d15922d7aae304df17762c3970fbace778e7cce)\n\n==103042==HINT: if you don't care about these errors you may set allocator_may_return_null=1\nSUMMARY: AddressSanitizer: allocation-size-too-big ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69 in malloc\n==103042==ABORTING\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "address_sanitizer",
+        "error_type": "requested",
+        "summary": "ERROR: AddressSanitizer: requested allocation size 0x4102838140a (0x41028382410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)"
+      }
+    },
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/baseline/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "=================================================================\n==103043==ERROR: AddressSanitizer: requested allocation size 0x4102838140a (0x41028382410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)\n    #0 0x7f446befd9c7 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69\n    #1 0x6478536da8dd in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/sources/baseline-d2a5f706740f/main.c:29\n    #2 0x7f446b22a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x7f446b22a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x6478536da3c4 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/baseline/instrumented/target+0x23c4) (BuildId: 5d15922d7aae304df17762c3970fbace778e7cce)\n\n==103043==HINT: if you don't care about these errors you may set allocator_may_return_null=1\nSUMMARY: AddressSanitizer: allocation-size-too-big ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69 in malloc\n==103043==ABORTING\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "address_sanitizer",
+        "error_type": "requested",
+        "summary": "ERROR: AddressSanitizer: requested allocation size 0x4102838140a (0x41028382410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)"
+      }
+    },
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/baseline/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "=================================================================\n==103044==ERROR: AddressSanitizer: requested allocation size 0x4102838140a (0x41028382410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)\n    #0 0x7828f3efd9c7 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69\n    #1 0x5d3a032ef8dd in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/sources/baseline-d2a5f706740f/main.c:29\n    #2 0x7828f322a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x7828f322a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x5d3a032ef3c4 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/baseline/instrumented/target+0x23c4) (BuildId: 5d15922d7aae304df17762c3970fbace778e7cce)\n\n==103044==HINT: if you don't care about these errors you may set allocator_may_return_null=1\nSUMMARY: AddressSanitizer: allocation-size-too-big ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69 in malloc\n==103044==ABORTING\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "address_sanitizer",
+        "error_type": "requested",
+        "summary": "ERROR: AddressSanitizer: requested allocation size 0x4102838140a (0x41028382410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)"
+      }
+    }
+  ],
+  "candidate_runs": [
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/candidate/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "=================================================================\n==103039==ERROR: AddressSanitizer: requested allocation size 0x4102838140a (0x41028382410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)\n    #0 0x7c62754fd9c7 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69\n    #1 0x640e31fff8e8 in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/sources/candidate-7336cab5beee/main.c:32\n    #2 0x7c627482a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x7c627482a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x640e31fff3c4 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/candidate/instrumented/target+0x23c4) (BuildId: 7db2ad76ff9a32253b1226ca1507d873321aaa53)\n\n==103039==HINT: if you don't care about these errors you may set allocator_may_return_null=1\nSUMMARY: AddressSanitizer: allocation-size-too-big ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69 in malloc\n==103039==ABORTING\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "address_sanitizer",
+        "error_type": "requested",
+        "summary": "ERROR: AddressSanitizer: requested allocation size 0x4102838140a (0x41028382410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)"
+      }
+    },
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/candidate/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "=================================================================\n==103040==ERROR: AddressSanitizer: requested allocation size 0x4102838140a (0x41028382410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)\n    #0 0x7c44072fd9c7 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69\n    #1 0x5f42362248e8 in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/sources/candidate-7336cab5beee/main.c:32\n    #2 0x7c440662a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x7c440662a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x5f42362243c4 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/candidate/instrumented/target+0x23c4) (BuildId: 7db2ad76ff9a32253b1226ca1507d873321aaa53)\n\n==103040==HINT: if you don't care about these errors you may set allocator_may_return_null=1\nSUMMARY: AddressSanitizer: allocation-size-too-big ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69 in malloc\n==103040==ABORTING\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "address_sanitizer",
+        "error_type": "requested",
+        "summary": "ERROR: AddressSanitizer: requested allocation size 0x4102838140a (0x41028382410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)"
+      }
+    },
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/candidate/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "=================================================================\n==103041==ERROR: AddressSanitizer: requested allocation size 0x4102838140a (0x41028382410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)\n    #0 0x7bea5befd9c7 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69\n    #1 0x628098a248e8 in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/sources/candidate-7336cab5beee/main.c:32\n    #2 0x7bea5b22a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x7bea5b22a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x628098a243c4 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/candidate/instrumented/target+0x23c4) (BuildId: 7db2ad76ff9a32253b1226ca1507d873321aaa53)\n\n==103041==HINT: if you don't care about these errors you may set allocator_may_return_null=1\nSUMMARY: AddressSanitizer: allocation-size-too-big ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69 in malloc\n==103041==ABORTING\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "address_sanitizer",
+        "error_type": "requested",
+        "summary": "ERROR: AddressSanitizer: requested allocation size 0x4102838140a (0x41028382410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)"
+      }
+    }
+  ],
+  "original_baseline_runs": [
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/baseline/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "=================================================================\n==103001==ERROR: AddressSanitizer: requested allocation size 0xa7c5ac47540a (0xa7c5ac476410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)\n    #0 0x7746d8cfd9c7 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69\n    #1 0x6104ee64f8dd in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/sources/baseline-d2a5f706740f/main.c:29\n    #2 0x7746d802a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x7746d802a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x6104ee64f3c4 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/baseline/instrumented/target+0x23c4) (BuildId: 5d15922d7aae304df17762c3970fbace778e7cce)\n\n==103001==HINT: if you don't care about these errors you may set allocator_may_return_null=1\nSUMMARY: AddressSanitizer: allocation-size-too-big ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69 in malloc\n==103001==ABORTING\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "address_sanitizer",
+        "error_type": "requested",
+        "summary": "ERROR: AddressSanitizer: requested allocation size 0xa7c5ac47540a (0xa7c5ac476410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)"
+      }
+    },
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/baseline/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "=================================================================\n==103002==ERROR: AddressSanitizer: requested allocation size 0xa7c5ac47540a (0xa7c5ac476410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)\n    #0 0x7b78460fd9c7 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69\n    #1 0x64befa9058dd in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/sources/baseline-d2a5f706740f/main.c:29\n    #2 0x7b784542a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x7b784542a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x64befa9053c4 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/baseline/instrumented/target+0x23c4) (BuildId: 5d15922d7aae304df17762c3970fbace778e7cce)\n\n==103002==HINT: if you don't care about these errors you may set allocator_may_return_null=1\nSUMMARY: AddressSanitizer: allocation-size-too-big ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69 in malloc\n==103002==ABORTING\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "address_sanitizer",
+        "error_type": "requested",
+        "summary": "ERROR: AddressSanitizer: requested allocation size 0xa7c5ac47540a (0xa7c5ac476410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)"
+      }
+    },
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/baseline/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "=================================================================\n==103003==ERROR: AddressSanitizer: requested allocation size 0xa7c5ac47540a (0xa7c5ac476410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)\n    #0 0x7ecf958fd9c7 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69\n    #1 0x5b3e5ea9c8dd in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/sources/baseline-d2a5f706740f/main.c:29\n    #2 0x7ecf94c2a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x7ecf94c2a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x5b3e5ea9c3c4 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/baseline/instrumented/target+0x23c4) (BuildId: 5d15922d7aae304df17762c3970fbace778e7cce)\n\n==103003==HINT: if you don't care about these errors you may set allocator_may_return_null=1\nSUMMARY: AddressSanitizer: allocation-size-too-big ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69 in malloc\n==103003==ABORTING\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "address_sanitizer",
+        "error_type": "requested",
+        "summary": "ERROR: AddressSanitizer: requested allocation size 0xa7c5ac47540a (0xa7c5ac476410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)"
+      }
+    }
+  ],
+  "original_candidate_runs": [
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/candidate/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "=================================================================\n==102998==ERROR: AddressSanitizer: requested allocation size 0xa7c5ac47540a (0xa7c5ac476410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)\n    #0 0x7a97cbafd9c7 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69\n    #1 0x6214fb62c8e8 in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/sources/candidate-7336cab5beee/main.c:32\n    #2 0x7a97cae2a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x7a97cae2a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x6214fb62c3c4 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/candidate/instrumented/target+0x23c4) (BuildId: 7db2ad76ff9a32253b1226ca1507d873321aaa53)\n\n==102998==HINT: if you don't care about these errors you may set allocator_may_return_null=1\nSUMMARY: AddressSanitizer: allocation-size-too-big ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69 in malloc\n==102998==ABORTING\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "address_sanitizer",
+        "error_type": "requested",
+        "summary": "ERROR: AddressSanitizer: requested allocation size 0xa7c5ac47540a (0xa7c5ac476410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)"
+      }
+    },
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/candidate/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "=================================================================\n==102999==ERROR: AddressSanitizer: requested allocation size 0xa7c5ac47540a (0xa7c5ac476410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)\n    #0 0x7fed33cfd9c7 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69\n    #1 0x5ae578ac38e8 in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/sources/candidate-7336cab5beee/main.c:32\n    #2 0x7fed3302a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x7fed3302a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x5ae578ac33c4 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/candidate/instrumented/target+0x23c4) (BuildId: 7db2ad76ff9a32253b1226ca1507d873321aaa53)\n\n==102999==HINT: if you don't care about these errors you may set allocator_may_return_null=1\nSUMMARY: AddressSanitizer: allocation-size-too-big ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69 in malloc\n==102999==ABORTING\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "address_sanitizer",
+        "error_type": "requested",
+        "summary": "ERROR: AddressSanitizer: requested allocation size 0xa7c5ac47540a (0xa7c5ac476410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)"
+      }
+    },
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/candidate/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "=================================================================\n==103000==ERROR: AddressSanitizer: requested allocation size 0xa7c5ac47540a (0xa7c5ac476410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)\n    #0 0x7ba5fccfd9c7 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69\n    #1 0x5aeb5ea638e8 in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/sources/candidate-7336cab5beee/main.c:32\n    #2 0x7ba5fc02a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x7ba5fc02a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x5aeb5ea633c4 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/capacity-reader/incomplete-patch/build/candidate/instrumented/target+0x23c4) (BuildId: 7db2ad76ff9a32253b1226ca1507d873321aaa53)\n\n==103000==HINT: if you don't care about these errors you may set allocator_may_return_null=1\nSUMMARY: AddressSanitizer: allocation-size-too-big ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69 in malloc\n==103000==ABORTING\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "address_sanitizer",
+        "error_type": "requested",
+        "summary": "ERROR: AddressSanitizer: requested allocation size 0xa7c5ac47540a (0xa7c5ac476410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)"
+      }
+    }
+  ],
+  "iteration": 6,
+  "regression_corpus_case": {
+    "path": "/home/parsa/security-project-final-rubric/PatchGuard-project-share/regression_corpus/capacity-reader/addition_wrap_overflow/0d93d5bdf7634beea17a0cb76e1b0e4531a95ed819c3043b065072e547b587f4.json",
+    "sha256": "0d93d5bdf7634beea17a0cb76e1b0e4531a95ed819c3043b065072e547b587f4",
+    "created": false
+  }
+}

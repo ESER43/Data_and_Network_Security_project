@@ -1,6 +1,5 @@
 __pycache__/
 *.py[cod]
-artifacts/
 .pytest_cache/
 third_party/inih/
 benchmarks/*/repository/

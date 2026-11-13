@@ -1,0 +1,685 @@
+{
+  "test": "null_replacement_crash",
+  "kind": "security",
+  "test_definition": {
+    "name": "null_replacement_crash",
+    "kind": "security",
+    "stdin_file": "benchmarks/cjson/inputs/null_replacement.txt",
+    "fuzz": true
+  },
+  "source_role": "candidate",
+  "source_fingerprint": "b1bd2b88a639d5274536424fea75834f6e4e6eb9c17e93757a237e23077f42ac",
+  "git_commit": "29753beb2f7a6563f44795076fa1bb530e4738c0",
+  "timeout_seconds": 3,
+  "resource_limits": {
+    "output_bytes": 2097152,
+    "cpu_seconds_soft": 4,
+    "core_dumps": false,
+    "open_files": 64,
+    "wall_seconds": 3.0
+  },
+  "argv": [],
+  "command": [
+    "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/candidate/instrumented/target"
+  ],
+  "build_commands": {
+    "baseline": {
+      "release": [
+        "cc",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fPIE",
+        "-pie",
+        "-Wl,-z,relro,-z,now",
+        "-fstack-protector-strong",
+        "-I/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/baseline-ec09832a8c61",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/baseline-ec09832a8c61/patchguard_cjson_driver.c",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/baseline-ec09832a8c61/cJSON.c",
+        "-o",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/baseline/release/target"
+      ],
+      "instrumented": [
+        "cc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fsanitize=address,undefined",
+        "-fPIE",
+        "-pie",
+        "-Wl,-z,relro,-z,now",
+        "-fstack-protector-strong",
+        "-I/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/baseline-ec09832a8c61",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/baseline-ec09832a8c61/patchguard_cjson_driver.c",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/baseline-ec09832a8c61/cJSON.c",
+        "-o",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/baseline/instrumented/target"
+      ]
+    },
+    "candidate": {
+      "release": [
+        "cc",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fPIE",
+        "-pie",
+        "-Wl,-z,relro,-z,now",
+        "-fstack-protector-strong",
+        "-I/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/candidate-29753beb2f7a",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/candidate-29753beb2f7a/patchguard_cjson_driver.c",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/candidate-29753beb2f7a/cJSON.c",
+        "-o",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/candidate/release/target"
+      ],
+      "instrumented": [
+        "cc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fsanitize=address,undefined",
+        "-fPIE",
+        "-pie",
+        "-Wl,-z,relro,-z,now",
+        "-fstack-protector-strong",
+        "-I/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/candidate-29753beb2f7a",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/candidate-29753beb2f7a/patchguard_cjson_driver.c",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/candidate-29753beb2f7a/cJSON.c",
+        "-o",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/candidate/instrumented/target"
+      ]
+    }
+  },
+  "compiler_versions": {
+    "baseline": {
+      "release": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+      "instrumented": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0"
+    },
+    "candidate": {
+      "release": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+      "instrumented": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0"
+    }
+  },
+  "build_environment": {
+    "baseline": {
+      "release": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C"
+      },
+      "instrumented": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C"
+      }
+    },
+    "candidate": {
+      "release": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C"
+      },
+      "instrumented": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C"
+      }
+    }
+  },
+  "runtime_environment": {
+    "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+    "LANG": "C",
+    "LC_ALL": "C",
+    "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+    "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+  },
+  "host_environment": {
+    "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+    "system": "Linux",
+    "release": "6.8.0-147-generic",
+    "machine": "x86_64",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+  },
+  "finding": {
+    "stable": true,
+    "kind": "undefined_behavior_sanitizer",
+    "error_type": "null pointer passed as argument 1, which is declared to never be null"
+  },
+  "binary": {
+    "path": "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/candidate/instrumented/target",
+    "available": true,
+    "sha256": "bb172e5c8dbf76b25339df0b0a93b0639fcdb63c39e30fddabd014a581bab9af",
+    "size": 467536
+  },
+  "replay_stable": true,
+  "reproduction_count": 3,
+  "minimization_attempts": 12,
+  "original_crash_site": {
+    "file": "cJSON.c",
+    "line": 417,
+    "function": null
+  },
+  "minimized_crash_site": {
+    "file": "cJSON.c",
+    "line": 417,
+    "function": null
+  },
+  "crash_site_preserved": true,
+  "original_stdin_sha256": "fb1ebb68435dc0dd85e8d8559a231dee3bb7a0795515bca15954d512a1cc67f7",
+  "minimized_stdin_sha256": "0ecef79464982a63bc029256a9a70a5fbbfe845f8b9212b4bbb928fa3fc3c403",
+  "original_stdin_base64": "c2FwcGxlfE5VTEwK",
+  "minimized_stdin_base64": "fE5VTEw=",
+  "minimized_replay_runs": [
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/candidate/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/candidate-29753beb2f7a/cJSON.c:417:9: runtime error: null pointer passed as argument 1, which is declared to never be null\n    #0 0x57112b48f1b5 in cJSON_SetValuestring /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/candidate-29753beb2f7a/cJSON.c:417\n    #1 0x57112b47f83b in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/candidate-29753beb2f7a/patchguard_cjson_driver.c:33\n    #2 0x76a41842a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x76a41842a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x57112b47f504 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/candidate/instrumented/target+0x1c504) (BuildId: d243d2ff1aa1bb16485f4712c7634214b91b4f56)\n\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "undefined_behavior_sanitizer",
+        "error_type": "null pointer passed as argument 1, which is declared to never be null",
+        "summary": "runtime error: null pointer passed as argument 1, which is declared to never be null"
+      }
+    },
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/candidate/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/candidate-29753beb2f7a/cJSON.c:417:9: runtime error: null pointer passed as argument 1, which is declared to never be null\n    #0 0x5f1efdb5e1b5 in cJSON_SetValuestring /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/candidate-29753beb2f7a/cJSON.c:417\n    #1 0x5f1efdb4e83b in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/candidate-29753beb2f7a/patchguard_cjson_driver.c:33\n    #2 0x7720d2a2a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x7720d2a2a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x5f1efdb4e504 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/candidate/instrumented/target+0x1c504) (BuildId: d243d2ff1aa1bb16485f4712c7634214b91b4f56)\n\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "undefined_behavior_sanitizer",
+        "error_type": "null pointer passed as argument 1, which is declared to never be null",
+        "summary": "runtime error: null pointer passed as argument 1, which is declared to never be null"
+      }
+    },
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/candidate/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/candidate-29753beb2f7a/cJSON.c:417:9: runtime error: null pointer passed as argument 1, which is declared to never be null\n    #0 0x6216a7a051b5 in cJSON_SetValuestring /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/candidate-29753beb2f7a/cJSON.c:417\n    #1 0x6216a79f583b in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/candidate-29753beb2f7a/patchguard_cjson_driver.c:33\n    #2 0x73e04902a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x73e04902a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x6216a79f5504 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/candidate/instrumented/target+0x1c504) (BuildId: d243d2ff1aa1bb16485f4712c7634214b91b4f56)\n\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "undefined_behavior_sanitizer",
+        "error_type": "null pointer passed as argument 1, which is declared to never be null",
+        "summary": "runtime error: null pointer passed as argument 1, which is declared to never be null"
+      }
+    }
+  ],
+  "classification": "VULN_REMAINS",
+  "correlation": {
+    "related": true,
+    "evidence_level": "nearby",
+    "locations": [
+      {
+        "path": "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/baseline-ec09832a8c61/cJSON.c",
+        "line": 413,
+        "function": null
+      },
+      {
+        "path": "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/baseline-ec09832a8c61/cJSON.c",
+        "line": 413,
+        "function": "cJSON_SetValuestring"
+      },
+      {
+        "path": "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/baseline-ec09832a8c61/patchguard_cjson_driver.c",
+        "line": 33,
+        "function": "main"
+      }
+    ],
+    "matches": [
+      {
+        "location": {
+          "path": "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/baseline-ec09832a8c61/cJSON.c",
+          "line": 413,
+          "function": "cJSON_SetValuestring"
+        },
+        "hunk": "@@ -412,0 +413,4 @@ CJSON_PUBLIC(char*) cJSON_SetValuestring(cJSON *object, const char *valuestring)",
+        "path": "cJSON.c",
+        "hunk_function": "cJSON_SetValuestring",
+        "same_function": true,
+        "relation": "nearby_line"
+      }
+    ],
+    "failure_kind": "undefined_behavior_sanitizer",
+    "error_type": "null pointer passed as argument 1, which is declared to never be null"
+  },
+  "baseline_state": {
+    "stable": true,
+    "kind": "undefined_behavior_sanitizer",
+    "error_type": "null pointer passed as argument 1, which is declared to never be null"
+  },
+  "baseline_runs": [
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/baseline/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/baseline-ec09832a8c61/cJSON.c:413:9: runtime error: null pointer passed as argument 1, which is declared to never be null\n    #0 0x58423fe6114f in cJSON_SetValuestring /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/baseline-ec09832a8c61/cJSON.c:413\n    #1 0x58423fe5183b in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/baseline-ec09832a8c61/patchguard_cjson_driver.c:33\n    #2 0x7c3c4462a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x7c3c4462a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x58423fe51504 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/baseline/instrumented/target+0x1c504) (BuildId: 33c62c8e2539c5d4df0bb66ba46cd77b4d893ddd)\n\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "undefined_behavior_sanitizer",
+        "error_type": "null pointer passed as argument 1, which is declared to never be null",
+        "summary": "runtime error: null pointer passed as argument 1, which is declared to never be null"
+      }
+    },
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/baseline/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/baseline-ec09832a8c61/cJSON.c:413:9: runtime error: null pointer passed as argument 1, which is declared to never be null\n    #0 0x5d991e04014f in cJSON_SetValuestring /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/baseline-ec09832a8c61/cJSON.c:413\n    #1 0x5d991e03083b in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/baseline-ec09832a8c61/patchguard_cjson_driver.c:33\n    #2 0x71e98f02a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x71e98f02a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x5d991e030504 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/baseline/instrumented/target+0x1c504) (BuildId: 33c62c8e2539c5d4df0bb66ba46cd77b4d893ddd)\n\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "undefined_behavior_sanitizer",
+        "error_type": "null pointer passed as argument 1, which is declared to never be null",
+        "summary": "runtime error: null pointer passed as argument 1, which is declared to never be null"
+      }
+    },
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/baseline/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/baseline-ec09832a8c61/cJSON.c:413:9: runtime error: null pointer passed as argument 1, which is declared to never be null\n    #0 0x5ffb0f53414f in cJSON_SetValuestring /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/baseline-ec09832a8c61/cJSON.c:413\n    #1 0x5ffb0f52483b in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/baseline-ec09832a8c61/patchguard_cjson_driver.c:33\n    #2 0x73a863a2a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x73a863a2a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x5ffb0f524504 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/baseline/instrumented/target+0x1c504) (BuildId: 33c62c8e2539c5d4df0bb66ba46cd77b4d893ddd)\n\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "undefined_behavior_sanitizer",
+        "error_type": "null pointer passed as argument 1, which is declared to never be null",
+        "summary": "runtime error: null pointer passed as argument 1, which is declared to never be null"
+      }
+    }
+  ],
+  "candidate_runs": [
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/candidate/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/candidate-29753beb2f7a/cJSON.c:417:9: runtime error: null pointer passed as argument 1, which is declared to never be null\n    #0 0x57112b48f1b5 in cJSON_SetValuestring /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/candidate-29753beb2f7a/cJSON.c:417\n    #1 0x57112b47f83b in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/candidate-29753beb2f7a/patchguard_cjson_driver.c:33\n    #2 0x76a41842a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x76a41842a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x57112b47f504 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/candidate/instrumented/target+0x1c504) (BuildId: d243d2ff1aa1bb16485f4712c7634214b91b4f56)\n\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "undefined_behavior_sanitizer",
+        "error_type": "null pointer passed as argument 1, which is declared to never be null",
+        "summary": "runtime error: null pointer passed as argument 1, which is declared to never be null"
+      }
+    },
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/candidate/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/candidate-29753beb2f7a/cJSON.c:417:9: runtime error: null pointer passed as argument 1, which is declared to never be null\n    #0 0x5f1efdb5e1b5 in cJSON_SetValuestring /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/candidate-29753beb2f7a/cJSON.c:417\n    #1 0x5f1efdb4e83b in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/candidate-29753beb2f7a/patchguard_cjson_driver.c:33\n    #2 0x7720d2a2a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x7720d2a2a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x5f1efdb4e504 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/candidate/instrumented/target+0x1c504) (BuildId: d243d2ff1aa1bb16485f4712c7634214b91b4f56)\n\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "undefined_behavior_sanitizer",
+        "error_type": "null pointer passed as argument 1, which is declared to never be null",
+        "summary": "runtime error: null pointer passed as argument 1, which is declared to never be null"
+      }
+    },
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/candidate/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/candidate-29753beb2f7a/cJSON.c:417:9: runtime error: null pointer passed as argument 1, which is declared to never be null\n    #0 0x6216a7a051b5 in cJSON_SetValuestring /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/candidate-29753beb2f7a/cJSON.c:417\n    #1 0x6216a79f583b in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/candidate-29753beb2f7a/patchguard_cjson_driver.c:33\n    #2 0x73e04902a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x73e04902a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x6216a79f5504 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/candidate/instrumented/target+0x1c504) (BuildId: d243d2ff1aa1bb16485f4712c7634214b91b4f56)\n\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "undefined_behavior_sanitizer",
+        "error_type": "null pointer passed as argument 1, which is declared to never be null",
+        "summary": "runtime error: null pointer passed as argument 1, which is declared to never be null"
+      }
+    }
+  ],
+  "original_baseline_runs": [
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/baseline/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/baseline-ec09832a8c61/cJSON.c:413:9: runtime error: null pointer passed as argument 1, which is declared to never be null\n    #0 0x5dc62575514f in cJSON_SetValuestring /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/baseline-ec09832a8c61/cJSON.c:413\n    #1 0x5dc62574583b in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/baseline-ec09832a8c61/patchguard_cjson_driver.c:33\n    #2 0x70626802a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x70626802a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x5dc625745504 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/baseline/instrumented/target+0x1c504) (BuildId: 33c62c8e2539c5d4df0bb66ba46cd77b4d893ddd)\n\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "undefined_behavior_sanitizer",
+        "error_type": "null pointer passed as argument 1, which is declared to never be null",
+        "summary": "runtime error: null pointer passed as argument 1, which is declared to never be null"
+      }
+    },
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/baseline/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/baseline-ec09832a8c61/cJSON.c:413:9: runtime error: null pointer passed as argument 1, which is declared to never be null\n    #0 0x61bca45e314f in cJSON_SetValuestring /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/baseline-ec09832a8c61/cJSON.c:413\n    #1 0x61bca45d383b in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/baseline-ec09832a8c61/patchguard_cjson_driver.c:33\n    #2 0x7dabea22a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x7dabea22a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x61bca45d3504 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/baseline/instrumented/target+0x1c504) (BuildId: 33c62c8e2539c5d4df0bb66ba46cd77b4d893ddd)\n\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "undefined_behavior_sanitizer",
+        "error_type": "null pointer passed as argument 1, which is declared to never be null",
+        "summary": "runtime error: null pointer passed as argument 1, which is declared to never be null"
+      }
+    },
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/baseline/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/baseline-ec09832a8c61/cJSON.c:413:9: runtime error: null pointer passed as argument 1, which is declared to never be null\n    #0 0x626dc66fc14f in cJSON_SetValuestring /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/baseline-ec09832a8c61/cJSON.c:413\n    #1 0x626dc66ec83b in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/baseline-ec09832a8c61/patchguard_cjson_driver.c:33\n    #2 0x7b51d7e2a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x7b51d7e2a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x626dc66ec504 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/baseline/instrumented/target+0x1c504) (BuildId: 33c62c8e2539c5d4df0bb66ba46cd77b4d893ddd)\n\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "undefined_behavior_sanitizer",
+        "error_type": "null pointer passed as argument 1, which is declared to never be null",
+        "summary": "runtime error: null pointer passed as argument 1, which is declared to never be null"
+      }
+    }
+  ],
+  "original_candidate_runs": [
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/candidate/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/candidate-29753beb2f7a/cJSON.c:417:9: runtime error: null pointer passed as argument 1, which is declared to never be null\n    #0 0x5b74f12e01b5 in cJSON_SetValuestring /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/candidate-29753beb2f7a/cJSON.c:417\n    #1 0x5b74f12d083b in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/candidate-29753beb2f7a/patchguard_cjson_driver.c:33\n    #2 0x794e4cc2a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x794e4cc2a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x5b74f12d0504 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/candidate/instrumented/target+0x1c504) (BuildId: d243d2ff1aa1bb16485f4712c7634214b91b4f56)\n\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "undefined_behavior_sanitizer",
+        "error_type": "null pointer passed as argument 1, which is declared to never be null",
+        "summary": "runtime error: null pointer passed as argument 1, which is declared to never be null"
+      }
+    },
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/candidate/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/candidate-29753beb2f7a/cJSON.c:417:9: runtime error: null pointer passed as argument 1, which is declared to never be null\n    #0 0x5ecace80d1b5 in cJSON_SetValuestring /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/candidate-29753beb2f7a/cJSON.c:417\n    #1 0x5ecace7fd83b in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/candidate-29753beb2f7a/patchguard_cjson_driver.c:33\n    #2 0x7dc53962a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x7dc53962a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x5ecace7fd504 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/candidate/instrumented/target+0x1c504) (BuildId: d243d2ff1aa1bb16485f4712c7634214b91b4f56)\n\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "undefined_behavior_sanitizer",
+        "error_type": "null pointer passed as argument 1, which is declared to never be null",
+        "summary": "runtime error: null pointer passed as argument 1, which is declared to never be null"
+      }
+    },
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/candidate/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/candidate-29753beb2f7a/cJSON.c:417:9: runtime error: null pointer passed as argument 1, which is declared to never be null\n    #0 0x5765f18841b5 in cJSON_SetValuestring /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/candidate-29753beb2f7a/cJSON.c:417\n    #1 0x5765f187483b in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/sources/candidate-29753beb2f7a/patchguard_cjson_driver.c:33\n    #2 0x7e980702a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x7e980702a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x5765f1874504 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/incomplete-patch/build/candidate/instrumented/target+0x1c504) (BuildId: d243d2ff1aa1bb16485f4712c7634214b91b4f56)\n\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "undefined_behavior_sanitizer",
+        "error_type": "null pointer passed as argument 1, which is declared to never be null",
+        "summary": "runtime error: null pointer passed as argument 1, which is declared to never be null"
+      }
+    }
+  ],
+  "iteration": 12,
+  "regression_corpus_case": {
+    "path": "/home/parsa/security-project-final-rubric/PatchGuard-project-share/regression_corpus/cjson/null_replacement_crash/0ecef79464982a63bc029256a9a70a5fbbfe845f8b9212b4bbb928fa3fc3c403.json",
+    "sha256": "0ecef79464982a63bc029256a9a70a5fbbfe845f8b9212b4bbb928fa3fc3c403",
+    "created": false
+  }
+}

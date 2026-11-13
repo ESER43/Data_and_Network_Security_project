@@ -1,0 +1,268 @@
+{
+  "test": "null_replacement_crash",
+  "kind": "security",
+  "test_definition": {
+    "name": "null_replacement_crash",
+    "kind": "security",
+    "stdin_file": "benchmarks/cjson/inputs/null_replacement.txt",
+    "fuzz": true
+  },
+  "source_role": "vulnerable_baseline",
+  "source_fingerprint": "4a18c7a73560e4429ef551964090488cc47e333059175bdb581450676f1b12c5",
+  "git_commit": "ec09832a8c61bd18393e90016ea383117660d559",
+  "timeout_seconds": 3,
+  "resource_limits": {
+    "output_bytes": 2097152,
+    "cpu_seconds_soft": 4,
+    "core_dumps": false,
+    "open_files": 64,
+    "wall_seconds": 3.0
+  },
+  "argv": [],
+  "command": [
+    "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/build/baseline/instrumented/target"
+  ],
+  "build_commands": {
+    "baseline": {
+      "release": [
+        "cc",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fPIE",
+        "-pie",
+        "-Wl,-z,relro,-z,now",
+        "-fstack-protector-strong",
+        "-I/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/sources/baseline-ec09832a8c61",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/sources/baseline-ec09832a8c61/patchguard_cjson_driver.c",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/sources/baseline-ec09832a8c61/cJSON.c",
+        "-o",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/build/baseline/release/target"
+      ],
+      "instrumented": [
+        "cc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fsanitize=address,undefined",
+        "-fPIE",
+        "-pie",
+        "-Wl,-z,relro,-z,now",
+        "-fstack-protector-strong",
+        "-I/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/sources/baseline-ec09832a8c61",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/sources/baseline-ec09832a8c61/patchguard_cjson_driver.c",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/sources/baseline-ec09832a8c61/cJSON.c",
+        "-o",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/build/baseline/instrumented/target"
+      ]
+    },
+    "candidate": {
+      "release": [
+        "cc",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fPIE",
+        "-pie",
+        "-Wl,-z,relro,-z,now",
+        "-fstack-protector-strong",
+        "-I/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/sources/candidate-afb672fa152f",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/sources/candidate-afb672fa152f/patchguard_cjson_driver.c",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/sources/candidate-afb672fa152f/cJSON.c",
+        "-o",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/build/candidate/release/target"
+      ],
+      "instrumented": [
+        "cc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fsanitize=address,undefined",
+        "-fPIE",
+        "-pie",
+        "-Wl,-z,relro,-z,now",
+        "-fstack-protector-strong",
+        "-I/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/sources/candidate-afb672fa152f",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/sources/candidate-afb672fa152f/patchguard_cjson_driver.c",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/sources/candidate-afb672fa152f/cJSON.c",
+        "-o",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/build/candidate/instrumented/target"
+      ]
+    }
+  },
+  "compiler_versions": {
+    "baseline": {
+      "release": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+      "instrumented": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0"
+    },
+    "candidate": {
+      "release": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+      "instrumented": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0"
+    }
+  },
+  "build_environment": {
+    "baseline": {
+      "release": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C"
+      },
+      "instrumented": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C"
+      }
+    },
+    "candidate": {
+      "release": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C"
+      },
+      "instrumented": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C"
+      }
+    }
+  },
+  "runtime_environment": {
+    "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+    "LANG": "C",
+    "LC_ALL": "C",
+    "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+    "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+  },
+  "host_environment": {
+    "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+    "system": "Linux",
+    "release": "6.8.0-147-generic",
+    "machine": "x86_64",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+  },
+  "finding": {
+    "stable": true,
+    "kind": "undefined_behavior_sanitizer",
+    "error_type": "null pointer passed as argument 1, which is declared to never be null"
+  },
+  "binary": {
+    "path": "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/build/baseline/instrumented/target",
+    "available": true,
+    "sha256": "7c6a6bc569d9186ebfa0545d47a14ae6915a9ee66a817f10ca8fb2953aa4b2ef",
+    "size": 467144
+  },
+  "replay_stable": true,
+  "reproduction_count": 3,
+  "minimization_attempts": 12,
+  "original_crash_site": {
+    "file": "cJSON.c",
+    "line": 413,
+    "function": null
+  },
+  "minimized_crash_site": {
+    "file": "cJSON.c",
+    "line": 413,
+    "function": null
+  },
+  "crash_site_preserved": true,
+  "original_stdin_sha256": "410bcb8bb7ce0dbac22db03c835284db6d72a88f42500f6dca15f3dd9932ab34",
+  "minimized_stdin_sha256": "0ecef79464982a63bc029256a9a70a5fbbfe845f8b9212b4bbb928fa3fc3c403",
+  "original_stdin_base64": "YXBwbGV8TlVMTAo=",
+  "minimized_stdin_base64": "fE5VTEw=",
+  "minimized_replay_runs": [
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/build/baseline/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/sources/baseline-ec09832a8c61/cJSON.c:413:9: runtime error: null pointer passed as argument 1, which is declared to never be null\n    #0 0x5ac90256d14f in cJSON_SetValuestring /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/sources/baseline-ec09832a8c61/cJSON.c:413\n    #1 0x5ac90255d83b in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/sources/baseline-ec09832a8c61/patchguard_cjson_driver.c:33\n    #2 0x7c3e6162a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x7c3e6162a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x5ac90255d504 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/build/baseline/instrumented/target+0x1c504) (BuildId: db0295d4af749ed2b87db3fc6954d1d9ae267ad8)\n\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "undefined_behavior_sanitizer",
+        "error_type": "null pointer passed as argument 1, which is declared to never be null",
+        "summary": "runtime error: null pointer passed as argument 1, which is declared to never be null"
+      }
+    },
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/build/baseline/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/sources/baseline-ec09832a8c61/cJSON.c:413:9: runtime error: null pointer passed as argument 1, which is declared to never be null\n    #0 0x5911786b914f in cJSON_SetValuestring /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/sources/baseline-ec09832a8c61/cJSON.c:413\n    #1 0x5911786a983b in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/sources/baseline-ec09832a8c61/patchguard_cjson_driver.c:33\n    #2 0x7acceda2a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x7acceda2a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x5911786a9504 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/build/baseline/instrumented/target+0x1c504) (BuildId: db0295d4af749ed2b87db3fc6954d1d9ae267ad8)\n\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "undefined_behavior_sanitizer",
+        "error_type": "null pointer passed as argument 1, which is declared to never be null",
+        "summary": "runtime error: null pointer passed as argument 1, which is declared to never be null"
+      }
+    },
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/build/baseline/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/sources/baseline-ec09832a8c61/cJSON.c:413:9: runtime error: null pointer passed as argument 1, which is declared to never be null\n    #0 0x55938360d14f in cJSON_SetValuestring /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/sources/baseline-ec09832a8c61/cJSON.c:413\n    #1 0x5593835fd83b in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/sources/baseline-ec09832a8c61/patchguard_cjson_driver.c:33\n    #2 0x7f391f82a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x7f391f82a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x5593835fd504 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/final-after-fixes-v2/cjson/regression-patch/build/baseline/instrumented/target+0x1c504) (BuildId: db0295d4af749ed2b87db3fc6954d1d9ae267ad8)\n\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "undefined_behavior_sanitizer",
+        "error_type": "null pointer passed as argument 1, which is declared to never be null",
+        "summary": "runtime error: null pointer passed as argument 1, which is declared to never be null"
+      }
+    }
+  ]
+}

@@ -255,16 +255,61 @@ def _matches_expected(run, test):
     return True
 
 
-def _crash_site(runs):
-    run = next((run for run in runs if run.get("failure")), None)
-    if run is None:
+def _crash_site_for_run(run, source):
+    if not run.get("failure"):
         return None
+    source_root = Path(source).resolve()
     locations = correlate({"hunks": []}, run.get("stdout", ""), run.get("stderr", ""))["locations"]
-    if not locations:
+    for location in locations:
+        try:
+            relative_path = Path(str(location["path"]).replace("\\", "/")).resolve().relative_to(source_root)
+        except (OSError, ValueError):
+            continue
+        return {"file": relative_path.as_posix(), "line": location["line"],
+                "function": location.get("function")}
+    return None
+
+
+def _crash_site(runs, source=None):
+    """Return a crash site; minimization supplies source to require a target frame."""
+    if source is None:
+        # Fuzz classification also compares baseline and candidate stacks before
+        # choosing whether a finding is pre-existing. Preserve its historical
+        # location comparison when no source snapshot is available.
+        run = next((run for run in runs if run.get("failure")), None)
+        if run is None:
+            return None
+        locations = correlate({"hunks": []}, run.get("stdout", ""), run.get("stderr", ""))["locations"]
+        if not locations:
+            return None
+        first = locations[0]
+        return {"file": str(first["path"]).replace("\\", "/").rsplit("/", 1)[-1],
+                "line": first["line"], "function": first.get("function")}
+
+    # With a source, return a stable source-local site, skipping library frames.
+    sites = [_crash_site_for_run(run, source) for run in runs if run.get("failure")]
+    if not sites or any(site is None for site in sites):
         return None
-    first = locations[0]
-    return {"file": str(first["path"]).replace("\\", "/").rsplit("/", 1)[-1],
-            "line": first["line"], "function": first.get("function")}
+    identities = {_crash_site_identity(site) for site in sites}
+    return sites[0] if len(identities) == 1 else None
+
+
+def _crash_site_identity(site):
+    # A function is a more stable identity than a line number when line tables
+    # differ; without a function name, require the exact source line as well.
+    function = site.get("function")
+    return (site.get("file"), function) if function else (site.get("file"), site.get("line"))
+
+
+def _failure_matches_site(run, expected_kind, expected_type, expected_site, source):
+    failure = run.get("failure") or {}
+    if failure.get("kind") != expected_kind:
+        return False
+    if expected_type is not None and failure.get("error_type") != expected_type:
+        return False
+    observed_site = _crash_site_for_run(run, source)
+    return (expected_site is not None and observed_site is not None and
+            _crash_site_identity(observed_site) == _crash_site_identity(expected_site))
 
 
 def _correlation_state(diff, runs, side="old"):
@@ -370,41 +415,61 @@ def _evaluate_test(test, data, baseline_bins, candidate_bins, target, diff, regr
 
 
 def _write_reproducer(bundle_root, test, input_data, target, source, finding, executable,
-                      baseline=False, revision=None):
+                      baseline=False, revision=None, reference_runs=None):
     bundle_root.mkdir(parents=True, exist_ok=True)
     minimized = input_data
     attempts = 0
     replay = []
     replay_state = None
+    original_crash_site = None
+    minimized_crash_site = None
+    crash_site_preserved = None
     binary = _binary_record(executable)
     if finding and test["kind"] == "security":
         expected_kind = finding["kind"] if isinstance(finding, dict) else finding
         expected_type = finding.get("error_type") if isinstance(finding, dict) else None
+        reference_runs = reference_runs or _run_many(executable, test, input_data, target, REPEAT_COUNT)
+        original_crash_site = _crash_site(reference_runs, source)
+        if original_crash_site is not None:
+            def reproduces(candidate):
+                result = run_program(executable, test, candidate, float(target.get("timeout_seconds", 3)),
+                                     target.get("environment"), target.get("limits"))
+                return _failure_matches_site(
+                    result, expected_kind, expected_type, original_crash_site, source
+                )
 
-        def reproduces(candidate):
-            result = run_program(executable, test, candidate, float(target.get("timeout_seconds", 3)),
-                                 target.get("environment"), target.get("limits"))
-            observed = result.get("failure") or {}
-            return observed.get("kind") == expected_kind and (
-                expected_type is None or observed.get("error_type") == expected_type
-            )
-
-        cache_key = (binary.get("sha256"), hashlib.sha256(input_data).hexdigest(),
-                     expected_kind, expected_type)
-        cached = _MINIMIZATION_CACHE.get(cache_key) if binary.get("available") else None
-        if cached is None:
-            minimized, attempts = minimize_bytes(input_data, reproduces)
-            if binary.get("available"):
-                _MINIMIZATION_CACHE[cache_key] = (minimized, attempts)
-        else:
-            minimized, attempts = cached
-        replay = _run_many(executable, test, minimized, target, REPEAT_COUNT)
-        replay_state = _failure_state(replay)
-        if not replay_state["stable"] or replay_state["kind"] != expected_kind or (
-            expected_type is not None and replay_state["error_type"] != expected_type
-        ):
-            minimized = input_data
+            site_key = _crash_site_identity(original_crash_site)
+            cache_key = (binary.get("sha256"), hashlib.sha256(input_data).hexdigest(),
+                         expected_kind, expected_type, site_key)
+            cached = _MINIMIZATION_CACHE.get(cache_key) if binary.get("available") else None
+            if cached is None:
+                minimized, attempts = minimize_bytes(input_data, reproduces)
+                if binary.get("available"):
+                    _MINIMIZATION_CACHE[cache_key] = (minimized, attempts)
+            else:
+                minimized, attempts = cached
             replay = _run_many(executable, test, minimized, target, REPEAT_COUNT)
+            replay_state = _failure_state(replay)
+            minimized_crash_site = _crash_site(replay, source)
+            if (not replay_state["stable"] or replay_state["kind"] != expected_kind or
+                    (expected_type is not None and replay_state["error_type"] != expected_type) or
+                    minimized_crash_site is None or
+                    _crash_site_identity(minimized_crash_site) != site_key):
+                minimized = input_data
+                replay = reference_runs
+                replay_state = _failure_state(replay)
+                minimized_crash_site = original_crash_site
+            crash_site_preserved = (
+                minimized_crash_site is not None and
+                _crash_site_identity(minimized_crash_site) == site_key
+            )
+        else:
+            # Without a source-local site, the tool cannot prove that a smaller
+            # input preserves this particular finding. Keep the original input.
+            replay = reference_runs
+            replay_state = _failure_state(replay)
+            minimized_crash_site = original_crash_site
+            crash_site_preserved = False
     elif finding:
         replay = _run_many(executable, test, input_data, target, 1)
 
@@ -447,6 +512,9 @@ def _write_reproducer(bundle_root, test, input_data, target, source, finding, ex
         "replay_stable": None if replay_state is None else replay_state["stable"],
         "reproduction_count": REPEAT_COUNT if test["kind"] == "security" else 1,
         "minimization_attempts": attempts,
+        "original_crash_site": original_crash_site,
+        "minimized_crash_site": minimized_crash_site,
+        "crash_site_preserved": crash_site_preserved,
         "original_stdin_sha256": hashlib.sha256(input_data).hexdigest(),
         "minimized_stdin_sha256": hashlib.sha256(minimized).hexdigest(),
         "original_stdin_base64": base64.b64encode(input_data).decode("ascii"),
@@ -528,6 +596,7 @@ def _fuzz_candidate(target, baseline_bins, candidate_bins, workspace, scenario_r
             finding = _write_reproducer(
                 scenario_root / "fuzz_reproducers", test, mutated, target, candidate_source,
                 candidate_state, candidate_bins["instrumented"], baseline=False, revision=candidate_revision,
+                reference_runs=candidate_runs,
             )
             minimized = base64.b64decode(finding["minimized_stdin_base64"], validate=True)
             minimized_candidate_runs = finding["minimized_replay_runs"]
@@ -658,6 +727,7 @@ def _evaluate_scenario(target, scenario, workspace, output_root, fuzz_seed):
                     scenario_root / "reproducers" / "baseline", test, input_data, target_for_evidence, before,
                     baseline_finding, baseline_bins["instrumented"], baseline=True,
                     revision=before_revision,
+                    reference_runs=result["runs"]["baseline"]["instrumented"],
                 )
             candidate_finding = _failure_state(result["runs"]["candidate"]["instrumented"])
             if candidate_finding["stable"]:
@@ -665,6 +735,7 @@ def _evaluate_scenario(target, scenario, workspace, output_root, fuzz_seed):
                     scenario_root / "reproducers" / "candidate", test, input_data, target_for_evidence, after,
                     candidate_finding, candidate_bins["instrumented"], baseline=False,
                     revision=candidate_revision,
+                    reference_runs=result["runs"]["candidate"]["instrumented"],
                 )
                 # Only configured tests may seed the corpus: replaying a stored case
                 # must not store another copy of itself under a derived name.
