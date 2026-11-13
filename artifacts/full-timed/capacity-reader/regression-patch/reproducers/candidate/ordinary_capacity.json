@@ -1,0 +1,182 @@
+{
+  "test": "ordinary_capacity",
+  "kind": "functional",
+  "test_definition": {
+    "name": "ordinary_capacity",
+    "kind": "functional",
+    "stdin_file": "benchmarks/capacity_reader/inputs/valid.txt",
+    "expected_stdout": "OK:hello\n",
+    "expected_exit": 0
+  },
+  "source_role": "candidate",
+  "source_fingerprint": "8ef12118286e46d2c44173b4709943a5768441a2345b1a8853eb7fe9e01b8bd3",
+  "git_commit": "299807338a5888cb78a918773d4a7c77f7c7f71c",
+  "timeout_seconds": 3,
+  "resource_limits": {
+    "output_bytes": 2097152,
+    "cpu_seconds_soft": 4,
+    "core_dumps": false,
+    "open_files": 64,
+    "wall_seconds": 3.0
+  },
+  "argv": [],
+  "command": [
+    "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/regression-patch/build/candidate/release/target"
+  ],
+  "build_commands": {
+    "baseline": {
+      "release": [
+        "cc",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fPIE",
+        "-pie",
+        "-Wl,-z,relro,-z,now",
+        "-fstack-protector-strong",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/regression-patch/sources/baseline-d2a5f706740f/main.c",
+        "-o",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/regression-patch/build/baseline/release/target"
+      ],
+      "instrumented": [
+        "cc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fsanitize=address,undefined",
+        "-fPIE",
+        "-pie",
+        "-Wl,-z,relro,-z,now",
+        "-fstack-protector-strong",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/regression-patch/sources/baseline-d2a5f706740f/main.c",
+        "-o",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/regression-patch/build/baseline/instrumented/target"
+      ]
+    },
+    "candidate": {
+      "release": [
+        "cc",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fPIE",
+        "-pie",
+        "-Wl,-z,relro,-z,now",
+        "-fstack-protector-strong",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/regression-patch/sources/candidate-299807338a58/main.c",
+        "-o",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/regression-patch/build/candidate/release/target"
+      ],
+      "instrumented": [
+        "cc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fsanitize=address,undefined",
+        "-fPIE",
+        "-pie",
+        "-Wl,-z,relro,-z,now",
+        "-fstack-protector-strong",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/regression-patch/sources/candidate-299807338a58/main.c",
+        "-o",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/regression-patch/build/candidate/instrumented/target"
+      ]
+    }
+  },
+  "compiler_versions": {
+    "baseline": {
+      "release": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+      "instrumented": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0"
+    },
+    "candidate": {
+      "release": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+      "instrumented": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0"
+    }
+  },
+  "build_environment": {
+    "baseline": {
+      "release": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C"
+      },
+      "instrumented": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C"
+      }
+    },
+    "candidate": {
+      "release": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C"
+      },
+      "instrumented": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C"
+      }
+    }
+  },
+  "runtime_environment": {
+    "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+    "LANG": "C",
+    "LC_ALL": "C",
+    "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+    "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+  },
+  "host_environment": {
+    "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+    "system": "Linux",
+    "release": "6.8.0-147-generic",
+    "machine": "x86_64",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+  },
+  "finding": "FUNCTIONAL_REGRESSION",
+  "binary": {
+    "path": "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/regression-patch/build/candidate/release/target",
+    "available": true,
+    "sha256": "d80371ded4919d812f48f76539caecab40aef3e9c1a4ba87e8f98ac70027e3f1",
+    "size": 22232
+  },
+  "replay_stable": null,
+  "reproduction_count": 1,
+  "minimization_attempts": 0,
+  "original_stdin_sha256": "b21ba8956659cdf622cffe3692358bcf6e93c45f394894d99ad226fa2b3b7b76",
+  "minimized_stdin_sha256": "b21ba8956659cdf622cffe3692358bcf6e93c45f394894d99ad226fa2b3b7b76",
+  "original_stdin_base64": "OApoZWxsbwo=",
+  "minimized_stdin_base64": "OApoZWxsbwo=",
+  "minimized_replay_runs": [
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/regression-patch/build/candidate/release/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": null
+    }
+  ]
+}

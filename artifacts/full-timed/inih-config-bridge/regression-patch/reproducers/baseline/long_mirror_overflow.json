@@ -1,0 +1,256 @@
+{
+  "test": "long_mirror_overflow",
+  "kind": "security",
+  "test_definition": {
+    "name": "long_mirror_overflow",
+    "kind": "security",
+    "stdin_file": "benchmarks/inih_bridge/inputs/long_mirror.ini"
+  },
+  "source_role": "vulnerable_baseline",
+  "source_fingerprint": "51cdcebd055c7d2811c14d406855c378ce2f6a9d4d0d339a2b3cad981d52ed7b",
+  "git_commit": "2f335c777199d78354473cd5ba25cf89ca420b74",
+  "timeout_seconds": 3,
+  "resource_limits": {
+    "output_bytes": 2097152,
+    "cpu_seconds_soft": 4,
+    "core_dumps": false,
+    "open_files": 64,
+    "wall_seconds": 3.0
+  },
+  "argv": [],
+  "command": [
+    "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/inih-config-bridge/regression-patch/build/baseline/instrumented/target"
+  ],
+  "build_commands": {
+    "baseline": {
+      "release": [
+        "cc",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fPIE",
+        "-pie",
+        "-Wl,-z,relro,-z,now",
+        "-fstack-protector-strong",
+        "-I/home/parsa/security-project-final-rubric/PatchGuard-project-share/vendor/inih",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/inih-config-bridge/regression-patch/sources/baseline-2f335c777199/main.c",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/vendor/inih/ini.c",
+        "-o",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/inih-config-bridge/regression-patch/build/baseline/release/target"
+      ],
+      "instrumented": [
+        "cc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fsanitize=address,undefined",
+        "-fPIE",
+        "-pie",
+        "-Wl,-z,relro,-z,now",
+        "-fstack-protector-strong",
+        "-I/home/parsa/security-project-final-rubric/PatchGuard-project-share/vendor/inih",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/inih-config-bridge/regression-patch/sources/baseline-2f335c777199/main.c",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/vendor/inih/ini.c",
+        "-o",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/inih-config-bridge/regression-patch/build/baseline/instrumented/target"
+      ]
+    },
+    "candidate": {
+      "release": [
+        "cc",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fPIE",
+        "-pie",
+        "-Wl,-z,relro,-z,now",
+        "-fstack-protector-strong",
+        "-I/home/parsa/security-project-final-rubric/PatchGuard-project-share/vendor/inih",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/inih-config-bridge/regression-patch/sources/candidate-3bd4bfa3572e/main.c",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/vendor/inih/ini.c",
+        "-o",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/inih-config-bridge/regression-patch/build/candidate/release/target"
+      ],
+      "instrumented": [
+        "cc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fsanitize=address,undefined",
+        "-fPIE",
+        "-pie",
+        "-Wl,-z,relro,-z,now",
+        "-fstack-protector-strong",
+        "-I/home/parsa/security-project-final-rubric/PatchGuard-project-share/vendor/inih",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/inih-config-bridge/regression-patch/sources/candidate-3bd4bfa3572e/main.c",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/vendor/inih/ini.c",
+        "-o",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/inih-config-bridge/regression-patch/build/candidate/instrumented/target"
+      ]
+    }
+  },
+  "compiler_versions": {
+    "baseline": {
+      "release": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+      "instrumented": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0"
+    },
+    "candidate": {
+      "release": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+      "instrumented": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0"
+    }
+  },
+  "build_environment": {
+    "baseline": {
+      "release": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C"
+      },
+      "instrumented": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C"
+      }
+    },
+    "candidate": {
+      "release": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C"
+      },
+      "instrumented": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C"
+      }
+    }
+  },
+  "runtime_environment": {
+    "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+    "LANG": "C",
+    "LC_ALL": "C",
+    "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+    "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+  },
+  "host_environment": {
+    "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+    "system": "Linux",
+    "release": "6.8.0-147-generic",
+    "machine": "x86_64",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+  },
+  "finding": {
+    "stable": true,
+    "kind": "address_sanitizer",
+    "error_type": "stack-buffer-overflow"
+  },
+  "binary": {
+    "path": "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/inih-config-bridge/regression-patch/build/baseline/instrumented/target",
+    "available": true,
+    "sha256": "65cd4556fe93faa3997dc0b076549198e44f942a929613515b1f9238299f14a3",
+    "size": 80600
+  },
+  "replay_stable": true,
+  "reproduction_count": 3,
+  "minimization_attempts": 39,
+  "original_stdin_sha256": "125648c77c87ed442b9ea8733af45234f07281a1c8ac474adbe0c8416ad7772c",
+  "minimized_stdin_sha256": "a063192f1c848f45b75d101caea80221f2ec14f67a03a6393dcf5108351496e2",
+  "original_stdin_base64": "W3N0b3JhZ2VdCm1pcnJvcj1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NCg==",
+  "minimized_stdin_base64": "W3N0b3JhZ2VdCm1pcnJvcj1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTQ==",
+  "minimized_replay_runs": [
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/inih-config-bridge/regression-patch/build/baseline/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "=================================================================\n==87666==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7478b8800040 at pc 0x7478bb2a7923 bp 0x7fff96c872d0 sp 0x7fff96c86a78\nWRITE of size 33 at 0x7478b8800040 thread T0\n    #0 0x7478bb2a7922 in strcpy ../../../../src/libsanitizer/asan/asan_interceptors.cpp:563\n    #1 0x5c244b4c55c3 in strcpy /usr/include/x86_64-linux-gnu/bits/string_fortified.h:79\n    #2 0x5c244b4c55c3 in on_value /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/inih-config-bridge/regression-patch/sources/baseline-2f335c777199/main.c:20\n    #3 0x5c244b4c6cc5 in ini_parse_stream /home/parsa/security-project-final-rubric/PatchGuard-project-share/vendor/inih/ini.c:239\n    #4 0x5c244b4c6f50 in ini_parse_string_length /home/parsa/security-project-final-rubric/PatchGuard-project-share/vendor/inih/ini.c:332\n    #5 0x5c244b4c6ffe in ini_parse_string /home/parsa/security-project-final-rubric/PatchGuard-project-share/vendor/inih/ini.c:322\n    #6 0x5c244b4c587e in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/inih-config-bridge/regression-patch/sources/baseline-2f335c777199/main.c:31\n    #7 0x7478ba62a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #8 0x7478ba62a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #9 0x5c244b4c5484 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/inih-config-bridge/regression-patch/build/baseline/instrumented/target+0x4484) (BuildId: 34810ab38760d7d8e329a740c8c7f349b95095ae)\n\nAddress 0x7478b8800040 is located in stack of thread T0 at offset 64 in frame\n    #0 0x5c244b4c5618 in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/inih-config-bridge/regression-patch/sources/baseline-2f335c777199/main.c:25\n\n  This frame has 2 object(s):\n    [32, 64) 'settings' (line 27)\n    [96, 4192) 'input' (line 26) <== Memory access at offset 64 partially underflows this variable\nHINT: this may be a false positive if your program uses some custom stack unwind mechanism, swapcontext or vfork\n      (longjmp and C++ exceptions *are* supported)\nSUMMARY: AddressSanitizer: stack-buffer-overflow ../../../../src/libsanitizer/asan/asan_interceptors.cpp:563 in strcpy\nShadow bytes around the buggy address:\n  0x7478b87ffd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x7478b87ffe00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x7478b87ffe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x7478b87fff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x7478b87fff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n=>0x7478b8800000: f1 f1 f1 f1 00 00 00 00[f2]f2 f2 f2 00 00 00 00\n  0x7478b8800080: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x7478b8800100: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x7478b8800180: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x7478b8800200: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x7478b8800280: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\nShadow byte legend (one shadow byte represents 8 application bytes):\n  Addressable:           00\n  Partially addressable: 01 02 03 04 05 06 07 \n  Heap left redzone:       fa\n  Freed heap region:       fd\n  Stack left redzone:      f1\n  Stack mid redzone:       f2\n  Stack right redzone:     f3\n  Stack after return:      f5\n  Stack use after scope:   f8\n  Global redzone:          f9\n  Global init order:       f6\n  Poisoned by user:        f7\n  Container overflow:      fc\n  Array cookie:            ac\n  Intra object redzone:    bb\n  ASan internal:           fe\n  Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==87666==ABORTING\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "address_sanitizer",
+        "error_type": "stack-buffer-overflow",
+        "summary": "ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7478b8800040 at pc 0x7478bb2a7923 bp 0x7fff96c872d0 sp 0x7fff96c86a78"
+      }
+    },
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/inih-config-bridge/regression-patch/build/baseline/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "=================================================================\n==87667==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7de651600040 at pc 0x7de6540a7923 bp 0x7ffd3f8e0b30 sp 0x7ffd3f8e02d8\nWRITE of size 33 at 0x7de651600040 thread T0\n    #0 0x7de6540a7922 in strcpy ../../../../src/libsanitizer/asan/asan_interceptors.cpp:563\n    #1 0x5af5a600f5c3 in strcpy /usr/include/x86_64-linux-gnu/bits/string_fortified.h:79\n    #2 0x5af5a600f5c3 in on_value /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/inih-config-bridge/regression-patch/sources/baseline-2f335c777199/main.c:20\n    #3 0x5af5a6010cc5 in ini_parse_stream /home/parsa/security-project-final-rubric/PatchGuard-project-share/vendor/inih/ini.c:239\n    #4 0x5af5a6010f50 in ini_parse_string_length /home/parsa/security-project-final-rubric/PatchGuard-project-share/vendor/inih/ini.c:332\n    #5 0x5af5a6010ffe in ini_parse_string /home/parsa/security-project-final-rubric/PatchGuard-project-share/vendor/inih/ini.c:322\n    #6 0x5af5a600f87e in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/inih-config-bridge/regression-patch/sources/baseline-2f335c777199/main.c:31\n    #7 0x7de65342a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #8 0x7de65342a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #9 0x5af5a600f484 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/inih-config-bridge/regression-patch/build/baseline/instrumented/target+0x4484) (BuildId: 34810ab38760d7d8e329a740c8c7f349b95095ae)\n\nAddress 0x7de651600040 is located in stack of thread T0 at offset 64 in frame\n    #0 0x5af5a600f618 in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/inih-config-bridge/regression-patch/sources/baseline-2f335c777199/main.c:25\n\n  This frame has 2 object(s):\n    [32, 64) 'settings' (line 27)\n    [96, 4192) 'input' (line 26) <== Memory access at offset 64 partially underflows this variable\nHINT: this may be a false positive if your program uses some custom stack unwind mechanism, swapcontext or vfork\n      (longjmp and C++ exceptions *are* supported)\nSUMMARY: AddressSanitizer: stack-buffer-overflow ../../../../src/libsanitizer/asan/asan_interceptors.cpp:563 in strcpy\nShadow bytes around the buggy address:\n  0x7de6515ffd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x7de6515ffe00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x7de6515ffe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x7de6515fff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x7de6515fff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n=>0x7de651600000: f1 f1 f1 f1 00 00 00 00[f2]f2 f2 f2 00 00 00 00\n  0x7de651600080: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x7de651600100: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x7de651600180: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x7de651600200: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x7de651600280: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\nShadow byte legend (one shadow byte represents 8 application bytes):\n  Addressable:           00\n  Partially addressable: 01 02 03 04 05 06 07 \n  Heap left redzone:       fa\n  Freed heap region:       fd\n  Stack left redzone:      f1\n  Stack mid redzone:       f2\n  Stack right redzone:     f3\n  Stack after return:      f5\n  Stack use after scope:   f8\n  Global redzone:          f9\n  Global init order:       f6\n  Poisoned by user:        f7\n  Container overflow:      fc\n  Array cookie:            ac\n  Intra object redzone:    bb\n  ASan internal:           fe\n  Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==87667==ABORTING\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "address_sanitizer",
+        "error_type": "stack-buffer-overflow",
+        "summary": "ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7de651600040 at pc 0x7de6540a7923 bp 0x7ffd3f8e0b30 sp 0x7ffd3f8e02d8"
+      }
+    },
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/inih-config-bridge/regression-patch/build/baseline/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "=================================================================\n==87668==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x737a13800040 at pc 0x737a162a7923 bp 0x7ffe9f354b10 sp 0x7ffe9f3542b8\nWRITE of size 33 at 0x737a13800040 thread T0\n    #0 0x737a162a7922 in strcpy ../../../../src/libsanitizer/asan/asan_interceptors.cpp:563\n    #1 0x5e1c3dd795c3 in strcpy /usr/include/x86_64-linux-gnu/bits/string_fortified.h:79\n    #2 0x5e1c3dd795c3 in on_value /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/inih-config-bridge/regression-patch/sources/baseline-2f335c777199/main.c:20\n    #3 0x5e1c3dd7acc5 in ini_parse_stream /home/parsa/security-project-final-rubric/PatchGuard-project-share/vendor/inih/ini.c:239\n    #4 0x5e1c3dd7af50 in ini_parse_string_length /home/parsa/security-project-final-rubric/PatchGuard-project-share/vendor/inih/ini.c:332\n    #5 0x5e1c3dd7affe in ini_parse_string /home/parsa/security-project-final-rubric/PatchGuard-project-share/vendor/inih/ini.c:322\n    #6 0x5e1c3dd7987e in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/inih-config-bridge/regression-patch/sources/baseline-2f335c777199/main.c:31\n    #7 0x737a1562a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #8 0x737a1562a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #9 0x5e1c3dd79484 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/inih-config-bridge/regression-patch/build/baseline/instrumented/target+0x4484) (BuildId: 34810ab38760d7d8e329a740c8c7f349b95095ae)\n\nAddress 0x737a13800040 is located in stack of thread T0 at offset 64 in frame\n    #0 0x5e1c3dd79618 in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/inih-config-bridge/regression-patch/sources/baseline-2f335c777199/main.c:25\n\n  This frame has 2 object(s):\n    [32, 64) 'settings' (line 27)\n    [96, 4192) 'input' (line 26) <== Memory access at offset 64 partially underflows this variable\nHINT: this may be a false positive if your program uses some custom stack unwind mechanism, swapcontext or vfork\n      (longjmp and C++ exceptions *are* supported)\nSUMMARY: AddressSanitizer: stack-buffer-overflow ../../../../src/libsanitizer/asan/asan_interceptors.cpp:563 in strcpy\nShadow bytes around the buggy address:\n  0x737a137ffd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x737a137ffe00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x737a137ffe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x737a137fff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x737a137fff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n=>0x737a13800000: f1 f1 f1 f1 00 00 00 00[f2]f2 f2 f2 00 00 00 00\n  0x737a13800080: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x737a13800100: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x737a13800180: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x737a13800200: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x737a13800280: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\nShadow byte legend (one shadow byte represents 8 application bytes):\n  Addressable:           00\n  Partially addressable: 01 02 03 04 05 06 07 \n  Heap left redzone:       fa\n  Freed heap region:       fd\n  Stack left redzone:      f1\n  Stack mid redzone:       f2\n  Stack right redzone:     f3\n  Stack after return:      f5\n  Stack use after scope:   f8\n  Global redzone:          f9\n  Global init order:       f6\n  Poisoned by user:        f7\n  Container overflow:      fc\n  Array cookie:            ac\n  Intra object redzone:    bb\n  ASan internal:           fe\n  Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==87668==ABORTING\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "address_sanitizer",
+        "error_type": "stack-buffer-overflow",
+        "summary": "ERROR: AddressSanitizer: stack-buffer-overflow on address 0x737a13800040 at pc 0x737a162a7923 bp 0x7ffe9f354b10 sp 0x7ffe9f3542b8"
+      }
+    }
+  ]
+}

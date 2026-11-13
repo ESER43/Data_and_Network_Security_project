@@ -1,0 +1,6 @@
+# pack-refs with: peeled fully-peeled sorted 
+69f55ca47d408360ee7546db18ee8916af964dec refs/heads/correct
+6d152451269408eee9682df7969d1b39cac7a46f refs/heads/incomplete
+3bd4bfa3572e9fdbbe7548773431e333001ae60d refs/heads/regression
+d6605797e819a67b3af6ff8c1ea317c6ab54a8e4 refs/heads/unseen
+2f335c777199d78354473cd5ba25cf89ca420b74 refs/heads/vulnerable

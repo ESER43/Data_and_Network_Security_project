@@ -1,0 +1,248 @@
+{
+  "test": "regression_alternate_wrap_overflow_bb09d9876c5a",
+  "kind": "security",
+  "test_definition": {
+    "kind": "security",
+    "name": "regression_alternate_wrap_overflow_bb09d9876c5a",
+    "stdin_file": "benchmarks/capacity_reader/inputs/overflow_alternate.txt"
+  },
+  "source_role": "vulnerable_baseline",
+  "source_fingerprint": "24a1b7fe20ea6b5e9e53fffa56d624e1b9fdd98eed2b0d6089061375c45291ed",
+  "git_commit": "d2a5f706740ff6c4c6fefd1dd63265727cf08982",
+  "timeout_seconds": 3,
+  "resource_limits": {
+    "output_bytes": 2097152,
+    "cpu_seconds_soft": 4,
+    "core_dumps": false,
+    "open_files": 64,
+    "wall_seconds": 3.0
+  },
+  "argv": [],
+  "command": [
+    "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/correct-patch/build/baseline/instrumented/target"
+  ],
+  "build_commands": {
+    "baseline": {
+      "release": [
+        "cc",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fPIE",
+        "-pie",
+        "-Wl,-z,relro,-z,now",
+        "-fstack-protector-strong",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/correct-patch/sources/baseline-d2a5f706740f/main.c",
+        "-o",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/correct-patch/build/baseline/release/target"
+      ],
+      "instrumented": [
+        "cc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fsanitize=address,undefined",
+        "-fPIE",
+        "-pie",
+        "-Wl,-z,relro,-z,now",
+        "-fstack-protector-strong",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/correct-patch/sources/baseline-d2a5f706740f/main.c",
+        "-o",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/correct-patch/build/baseline/instrumented/target"
+      ]
+    },
+    "candidate": {
+      "release": [
+        "cc",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fPIE",
+        "-pie",
+        "-Wl,-z,relro,-z,now",
+        "-fstack-protector-strong",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/correct-patch/sources/candidate-54246682257a/main.c",
+        "-o",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/correct-patch/build/candidate/release/target"
+      ],
+      "instrumented": [
+        "cc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fsanitize=address,undefined",
+        "-fPIE",
+        "-pie",
+        "-Wl,-z,relro,-z,now",
+        "-fstack-protector-strong",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/correct-patch/sources/candidate-54246682257a/main.c",
+        "-o",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/correct-patch/build/candidate/instrumented/target"
+      ]
+    }
+  },
+  "compiler_versions": {
+    "baseline": {
+      "release": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+      "instrumented": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0"
+    },
+    "candidate": {
+      "release": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+      "instrumented": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0"
+    }
+  },
+  "build_environment": {
+    "baseline": {
+      "release": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C"
+      },
+      "instrumented": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C"
+      }
+    },
+    "candidate": {
+      "release": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C"
+      },
+      "instrumented": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C"
+      }
+    }
+  },
+  "runtime_environment": {
+    "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+    "LANG": "C",
+    "LC_ALL": "C",
+    "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+    "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+  },
+  "host_environment": {
+    "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+    "system": "Linux",
+    "release": "6.8.0-147-generic",
+    "machine": "x86_64",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+  },
+  "finding": {
+    "stable": true,
+    "kind": "address_sanitizer",
+    "error_type": "heap-buffer-overflow"
+  },
+  "binary": {
+    "path": "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/correct-patch/build/baseline/instrumented/target",
+    "available": true,
+    "sha256": "abe360955ff73cefc3cf1e96f2d2daa74811290305f67c815ac40fc43d8ee951",
+    "size": 39104
+  },
+  "replay_stable": true,
+  "reproduction_count": 3,
+  "minimization_attempts": 34,
+  "original_stdin_sha256": "bb09d9876c5af2c8413a8fa621bdb04bf1b71a0374484c7f6361692e4c59271a",
+  "minimized_stdin_sha256": "bb09d9876c5af2c8413a8fa621bdb04bf1b71a0374484c7f6361692e4c59271a",
+  "original_stdin_base64": "MTg0NDY3NDQwNzM3MDk1NTE2MDUKQkJCQkI=",
+  "minimized_stdin_base64": "MTg0NDY3NDQwNzM3MDk1NTE2MDUKQkJCQkI=",
+  "minimized_replay_runs": [
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/correct-patch/build/baseline/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "=================================================================\n==88934==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x502000000010 at pc 0x64ab791d6ab4 bp 0x7ffd40f83af0 sp 0x7ffd40f83ae0\nWRITE of size 6 at 0x502000000010 thread T0\n    #0 0x64ab791d6ab3 in memcpy /usr/include/x86_64-linux-gnu/bits/string_fortified.h:29\n    #1 0x64ab791d6ab3 in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/correct-patch/sources/baseline-d2a5f706740f/main.c:35\n    #2 0x776bea42a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x776bea42a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x64ab791d63c4 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/correct-patch/build/baseline/instrumented/target+0x23c4) (BuildId: 809fcc600d1ed6ede31fb8581a698969fe4e938a)\n\n0x502000000015 is located 0 bytes after 5-byte region [0x502000000010,0x502000000015)\nallocated by thread T0 here:\n    #0 0x776beb0fd9c7 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69\n    #1 0x64ab791d68dd in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/correct-patch/sources/baseline-d2a5f706740f/main.c:29\n    #2 0x776bea42a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x776bea42a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x64ab791d63c4 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/correct-patch/build/baseline/instrumented/target+0x23c4) (BuildId: 809fcc600d1ed6ede31fb8581a698969fe4e938a)\n\nSUMMARY: AddressSanitizer: heap-buffer-overflow /usr/include/x86_64-linux-gnu/bits/string_fortified.h:29 in memcpy\nShadow bytes around the buggy address:\n  0x501ffffffd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x501ffffffe00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x501ffffffe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x501fffffff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x501fffffff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n=>0x502000000000: fa fa[05]fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x502000000080: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x502000000100: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x502000000180: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x502000000200: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x502000000280: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\nShadow byte legend (one shadow byte represents 8 application bytes):\n  Addressable:           00\n  Partially addressable: 01 02 03 04 05 06 07 \n  Heap left redzone:       fa\n  Freed heap region:       fd\n  Stack left redzone:      f1\n  Stack mid redzone:       f2\n  Stack right redzone:     f3\n  Stack after return:      f5\n  Stack use after scope:   f8\n  Global redzone:          f9\n  Global init order:       f6\n  Poisoned by user:        f7\n  Container overflow:      fc\n  Array cookie:            ac\n  Intra object redzone:    bb\n  ASan internal:           fe\n  Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==88934==ABORTING\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "address_sanitizer",
+        "error_type": "heap-buffer-overflow",
+        "summary": "ERROR: AddressSanitizer: heap-buffer-overflow on address 0x502000000010 at pc 0x64ab791d6ab4 bp 0x7ffd40f83af0 sp 0x7ffd40f83ae0"
+      }
+    },
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/correct-patch/build/baseline/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "=================================================================\n==88935==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x502000000010 at pc 0x610dd8cabab4 bp 0x7ffe812103c0 sp 0x7ffe812103b0\nWRITE of size 6 at 0x502000000010 thread T0\n    #0 0x610dd8cabab3 in memcpy /usr/include/x86_64-linux-gnu/bits/string_fortified.h:29\n    #1 0x610dd8cabab3 in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/correct-patch/sources/baseline-d2a5f706740f/main.c:35\n    #2 0x72b84c22a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x72b84c22a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x610dd8cab3c4 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/correct-patch/build/baseline/instrumented/target+0x23c4) (BuildId: 809fcc600d1ed6ede31fb8581a698969fe4e938a)\n\n0x502000000015 is located 0 bytes after 5-byte region [0x502000000010,0x502000000015)\nallocated by thread T0 here:\n    #0 0x72b84cefd9c7 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69\n    #1 0x610dd8cab8dd in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/correct-patch/sources/baseline-d2a5f706740f/main.c:29\n    #2 0x72b84c22a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x72b84c22a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x610dd8cab3c4 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/correct-patch/build/baseline/instrumented/target+0x23c4) (BuildId: 809fcc600d1ed6ede31fb8581a698969fe4e938a)\n\nSUMMARY: AddressSanitizer: heap-buffer-overflow /usr/include/x86_64-linux-gnu/bits/string_fortified.h:29 in memcpy\nShadow bytes around the buggy address:\n  0x501ffffffd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x501ffffffe00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x501ffffffe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x501fffffff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x501fffffff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n=>0x502000000000: fa fa[05]fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x502000000080: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x502000000100: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x502000000180: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x502000000200: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x502000000280: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\nShadow byte legend (one shadow byte represents 8 application bytes):\n  Addressable:           00\n  Partially addressable: 01 02 03 04 05 06 07 \n  Heap left redzone:       fa\n  Freed heap region:       fd\n  Stack left redzone:      f1\n  Stack mid redzone:       f2\n  Stack right redzone:     f3\n  Stack after return:      f5\n  Stack use after scope:   f8\n  Global redzone:          f9\n  Global init order:       f6\n  Poisoned by user:        f7\n  Container overflow:      fc\n  Array cookie:            ac\n  Intra object redzone:    bb\n  ASan internal:           fe\n  Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==88935==ABORTING\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "address_sanitizer",
+        "error_type": "heap-buffer-overflow",
+        "summary": "ERROR: AddressSanitizer: heap-buffer-overflow on address 0x502000000010 at pc 0x610dd8cabab4 bp 0x7ffe812103c0 sp 0x7ffe812103b0"
+      }
+    },
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/correct-patch/build/baseline/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "=================================================================\n==88936==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x502000000010 at pc 0x63cb80525ab4 bp 0x7ffdb68e5480 sp 0x7ffdb68e5470\nWRITE of size 6 at 0x502000000010 thread T0\n    #0 0x63cb80525ab3 in memcpy /usr/include/x86_64-linux-gnu/bits/string_fortified.h:29\n    #1 0x63cb80525ab3 in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/correct-patch/sources/baseline-d2a5f706740f/main.c:35\n    #2 0x774ee9a2a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x774ee9a2a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x63cb805253c4 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/correct-patch/build/baseline/instrumented/target+0x23c4) (BuildId: 809fcc600d1ed6ede31fb8581a698969fe4e938a)\n\n0x502000000015 is located 0 bytes after 5-byte region [0x502000000010,0x502000000015)\nallocated by thread T0 here:\n    #0 0x774eea6fd9c7 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69\n    #1 0x63cb805258dd in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/correct-patch/sources/baseline-d2a5f706740f/main.c:29\n    #2 0x774ee9a2a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x774ee9a2a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x63cb805253c4 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/correct-patch/build/baseline/instrumented/target+0x23c4) (BuildId: 809fcc600d1ed6ede31fb8581a698969fe4e938a)\n\nSUMMARY: AddressSanitizer: heap-buffer-overflow /usr/include/x86_64-linux-gnu/bits/string_fortified.h:29 in memcpy\nShadow bytes around the buggy address:\n  0x501ffffffd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x501ffffffe00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x501ffffffe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x501fffffff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x501fffffff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n=>0x502000000000: fa fa[05]fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x502000000080: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x502000000100: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x502000000180: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x502000000200: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x502000000280: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\nShadow byte legend (one shadow byte represents 8 application bytes):\n  Addressable:           00\n  Partially addressable: 01 02 03 04 05 06 07 \n  Heap left redzone:       fa\n  Freed heap region:       fd\n  Stack left redzone:      f1\n  Stack mid redzone:       f2\n  Stack right redzone:     f3\n  Stack after return:      f5\n  Stack use after scope:   f8\n  Global redzone:          f9\n  Global init order:       f6\n  Poisoned by user:        f7\n  Container overflow:      fc\n  Array cookie:            ac\n  Intra object redzone:    bb\n  ASan internal:           fe\n  Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==88936==ABORTING\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "address_sanitizer",
+        "error_type": "heap-buffer-overflow",
+        "summary": "ERROR: AddressSanitizer: heap-buffer-overflow on address 0x502000000010 at pc 0x63cb80525ab4 bp 0x7ffdb68e5480 sp 0x7ffdb68e5470"
+      }
+    }
+  ]
+}

@@ -1,0 +1,249 @@
+{
+  "test": "regression_addition_wrap_overflow_b8cf6a6a783e",
+  "kind": "security",
+  "test_definition": {
+    "fuzz": true,
+    "kind": "security",
+    "name": "regression_addition_wrap_overflow_b8cf6a6a783e",
+    "stdin_file": "benchmarks/capacity_reader/inputs/overflow.txt"
+  },
+  "source_role": "vulnerable_baseline",
+  "source_fingerprint": "24a1b7fe20ea6b5e9e53fffa56d624e1b9fdd98eed2b0d6089061375c45291ed",
+  "git_commit": "d2a5f706740ff6c4c6fefd1dd63265727cf08982",
+  "timeout_seconds": 3,
+  "resource_limits": {
+    "output_bytes": 2097152,
+    "cpu_seconds_soft": 4,
+    "core_dumps": false,
+    "open_files": 64,
+    "wall_seconds": 3.0
+  },
+  "argv": [],
+  "command": [
+    "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/regression-patch/build/baseline/instrumented/target"
+  ],
+  "build_commands": {
+    "baseline": {
+      "release": [
+        "cc",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fPIE",
+        "-pie",
+        "-Wl,-z,relro,-z,now",
+        "-fstack-protector-strong",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/regression-patch/sources/baseline-d2a5f706740f/main.c",
+        "-o",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/regression-patch/build/baseline/release/target"
+      ],
+      "instrumented": [
+        "cc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fsanitize=address,undefined",
+        "-fPIE",
+        "-pie",
+        "-Wl,-z,relro,-z,now",
+        "-fstack-protector-strong",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/regression-patch/sources/baseline-d2a5f706740f/main.c",
+        "-o",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/regression-patch/build/baseline/instrumented/target"
+      ]
+    },
+    "candidate": {
+      "release": [
+        "cc",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fPIE",
+        "-pie",
+        "-Wl,-z,relro,-z,now",
+        "-fstack-protector-strong",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/regression-patch/sources/candidate-299807338a58/main.c",
+        "-o",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/regression-patch/build/candidate/release/target"
+      ],
+      "instrumented": [
+        "cc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fsanitize=address,undefined",
+        "-fPIE",
+        "-pie",
+        "-Wl,-z,relro,-z,now",
+        "-fstack-protector-strong",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/regression-patch/sources/candidate-299807338a58/main.c",
+        "-o",
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/regression-patch/build/candidate/instrumented/target"
+      ]
+    }
+  },
+  "compiler_versions": {
+    "baseline": {
+      "release": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+      "instrumented": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0"
+    },
+    "candidate": {
+      "release": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+      "instrumented": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0"
+    }
+  },
+  "build_environment": {
+    "baseline": {
+      "release": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C"
+      },
+      "instrumented": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C"
+      }
+    },
+    "candidate": {
+      "release": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C"
+      },
+      "instrumented": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C"
+      }
+    }
+  },
+  "runtime_environment": {
+    "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+    "LANG": "C",
+    "LC_ALL": "C",
+    "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+    "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+  },
+  "host_environment": {
+    "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+    "system": "Linux",
+    "release": "6.8.0-147-generic",
+    "machine": "x86_64",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+  },
+  "finding": {
+    "stable": true,
+    "kind": "address_sanitizer",
+    "error_type": "requested"
+  },
+  "binary": {
+    "path": "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/regression-patch/build/baseline/instrumented/target",
+    "available": true,
+    "sha256": "f9fe1fcd689626be5c18c73fa1c5b30c3ae45848c645e05833b9db183f6510d8",
+    "size": 39112
+  },
+  "replay_stable": true,
+  "reproduction_count": 3,
+  "minimization_attempts": 20,
+  "original_stdin_sha256": "b8cf6a6a783e285dc413ffbd57e7f3e619f868744413e0e02c7479baa6cb0705",
+  "minimized_stdin_sha256": "b8cf6a6a783e285dc413ffbd57e7f3e619f868744413e0e02c7479baa6cb0705",
+  "original_stdin_base64": "NDQ2NzQ0MDc1MTYxMApB",
+  "minimized_stdin_base64": "NDQ2NzQ0MDc1MTYxMApB",
+  "minimized_replay_runs": [
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/regression-patch/build/baseline/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "=================================================================\n==90133==ERROR: AddressSanitizer: requested allocation size 0x4102838140a (0x41028382410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)\n    #0 0x7f0e180fd9c7 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69\n    #1 0x637003f838dd in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/regression-patch/sources/baseline-d2a5f706740f/main.c:29\n    #2 0x7f0e1742a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x7f0e1742a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x637003f833c4 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/regression-patch/build/baseline/instrumented/target+0x23c4) (BuildId: 5a413e39449c1f1477aec210791a2263ad4e941b)\n\n==90133==HINT: if you don't care about these errors you may set allocator_may_return_null=1\nSUMMARY: AddressSanitizer: allocation-size-too-big ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69 in malloc\n==90133==ABORTING\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "address_sanitizer",
+        "error_type": "requested",
+        "summary": "ERROR: AddressSanitizer: requested allocation size 0x4102838140a (0x41028382410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)"
+      }
+    },
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/regression-patch/build/baseline/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "=================================================================\n==90134==ERROR: AddressSanitizer: requested allocation size 0x4102838140a (0x41028382410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)\n    #0 0x74f4270fd9c7 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69\n    #1 0x5a90cb1478dd in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/regression-patch/sources/baseline-d2a5f706740f/main.c:29\n    #2 0x74f42642a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x74f42642a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x5a90cb1473c4 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/regression-patch/build/baseline/instrumented/target+0x23c4) (BuildId: 5a413e39449c1f1477aec210791a2263ad4e941b)\n\n==90134==HINT: if you don't care about these errors you may set allocator_may_return_null=1\nSUMMARY: AddressSanitizer: allocation-size-too-big ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69 in malloc\n==90134==ABORTING\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "address_sanitizer",
+        "error_type": "requested",
+        "summary": "ERROR: AddressSanitizer: requested allocation size 0x4102838140a (0x41028382410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)"
+      }
+    },
+    {
+      "argv": [
+        "/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/regression-patch/build/baseline/instrumented/target"
+      ],
+      "environment": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "halt_on_error=1:abort_on_error=0",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "=================================================================\n==90135==ERROR: AddressSanitizer: requested allocation size 0x4102838140a (0x41028382410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)\n    #0 0x7e14d9afd9c7 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69\n    #1 0x6084c16828dd in main /home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/regression-patch/sources/baseline-d2a5f706740f/main.c:29\n    #2 0x7e14d8e2a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #3 0x7e14d8e2a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8cebda42d140fc2b09639f8b13a5d5f2e617ef09)\n    #4 0x6084c16823c4 in _start (/home/parsa/security-project-final-rubric/PatchGuard-project-share/artifacts/full-timed/capacity-reader/regression-patch/build/baseline/instrumented/target+0x23c4) (BuildId: 5a413e39449c1f1477aec210791a2263ad4e941b)\n\n==90135==HINT: if you don't care about these errors you may set allocator_may_return_null=1\nSUMMARY: AddressSanitizer: allocation-size-too-big ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69 in malloc\n==90135==ABORTING\n",
+      "timed_out": false,
+      "limits": {
+        "cpu_seconds_soft": 4,
+        "cpu_seconds_hard": 5,
+        "file_size_bytes": 2097152,
+        "open_files": 64,
+        "core_dumps": false,
+        "wall_seconds": 3.0
+      },
+      "output_truncated": false,
+      "failure": {
+        "kind": "address_sanitizer",
+        "error_type": "requested",
+        "summary": "ERROR: AddressSanitizer: requested allocation size 0x4102838140a (0x41028382410 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)"
+      }
+    }
+  ]
+}
