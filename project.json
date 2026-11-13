@@ -125,6 +125,66 @@
         {"name": "regression-patch", "candidate": "regression"},
         {"name": "unseen-style-patch", "candidate": "unseen"}
       ]
+    },
+    {
+      "name": "cjson",
+      "repository": "benchmarks/cjson/benchmark.bundle",
+      "versions": {
+        "vulnerable": "vulnerable",
+        "correct": "correct",
+        "incomplete": "incomplete",
+        "regression": "regression",
+        "unseen": "unseen"
+      },
+      "timeout_seconds": 3,
+      "fuzz_iterations": 32,
+      "build": {
+        "release": [
+          "cc", "-std=c11", "-O2", "-g", "-fno-omit-frame-pointer",
+          "-fPIE", "-pie", "-Wl,-z,relro,-z,now", "-fstack-protector-strong",
+          "-I{source}", "{source}/patchguard_cjson_driver.c", "{source}/cJSON.c", "-o", "{build}/target"
+        ],
+        "instrumented": [
+          "cc", "-std=c11", "-O1", "-g", "-fno-omit-frame-pointer",
+          "-fsanitize=address,undefined", "-fPIE", "-pie",
+          "-Wl,-z,relro,-z,now", "-fstack-protector-strong",
+          "-I{source}", "{source}/patchguard_cjson_driver.c", "{source}/cJSON.c", "-o", "{build}/target"
+        ],
+        "executable": "{build}/target"
+      },
+      "tests": [
+        {
+          "name": "null_replacement_crash",
+          "kind": "security",
+          "stdin_file": "benchmarks/cjson/inputs/null_replacement.txt",
+          "fuzz": true
+        },
+        {
+          "name": "null_replacement_alternate_object",
+          "kind": "security",
+          "stdin_file": "benchmarks/cjson/inputs/null_replacement_alternate.txt"
+        },
+        {
+          "name": "ordinary_replacement",
+          "kind": "functional",
+          "stdin_file": "benchmarks/cjson/inputs/ordinary.txt",
+          "expected_stdout": "OK:pear\n",
+          "expected_exit": 0
+        },
+        {
+          "name": "boundary_replacement",
+          "kind": "functional",
+          "stdin_file": "benchmarks/cjson/inputs/boundary.txt",
+          "expected_stdout": "OK:BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\n",
+          "expected_exit": 0
+        }
+      ],
+      "scenarios": [
+        {"name": "correct-patch", "candidate": "correct"},
+        {"name": "incomplete-patch", "candidate": "incomplete"},
+        {"name": "regression-patch", "candidate": "regression"},
+        {"name": "unseen-style-patch", "candidate": "unseen"}
+      ]
     }
   ]
 }

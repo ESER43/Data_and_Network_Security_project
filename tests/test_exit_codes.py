@@ -6,6 +6,7 @@ from unittest.mock import patch
 from pathlib import Path
 
 from patchguard.errors import PatchGuardError
+from patchguard.diffing import correlate
 from patchguard.evaluate import (
     _aggregate,
     _classify_fuzz_finding,
@@ -98,6 +99,25 @@ class FuzzClassificationTests(unittest.TestCase):
 
         self.assertFalse(baseline_state["stable"])
         self.assertEqual(classification, "INCONCLUSIVE")
+
+
+class DiffCorrelationTests(unittest.TestCase):
+    def test_nearby_match_requires_same_function(self):
+        diff = {"hunks": [{"path": "main.c", "old_start": 10, "old_count": 2,
+                           "new_start": 10, "new_count": 2,
+                           "header": "@@ -10,2 +10,2 @@ int main(void)"}]}
+
+        same_function = correlate(
+            diff, "", "#0 0x123 in main /tmp/build/main.c:15:3", side="new"
+        )
+        other_function = correlate(
+            diff, "", "#0 0x123 in on_value /tmp/build/main.c:15:3", side="new"
+        )
+
+        self.assertEqual(same_function["evidence_level"], "nearby")
+        self.assertTrue(same_function["matches"][0]["same_function"])
+        self.assertEqual(other_function["evidence_level"], "none")
+        self.assertFalse(other_function["related"])
 
 
 class ElfHardeningParsingTests(unittest.TestCase):

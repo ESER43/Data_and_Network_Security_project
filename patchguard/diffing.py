@@ -5,7 +5,9 @@ from pathlib import PurePosixPath
 
 
 _HUNK_RE = re.compile(r"^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@")
-_LOCATION_RE = re.compile(r"((?:[A-Za-z]:)?[^\r\n:]*?\.(?:c|cc|cpp|h|hpp)):(\d+)(?::\d+)?")
+_LOCATION_RE = re.compile(r"(?P<path>(?:[A-Za-z]:)?[^\r\n:]*?\.(?:c|cc|cpp|h|hpp)):(?P<line>\d+)(?::\d+)?")
+_FRAME_PREFIX_RE = re.compile(r"^#\d+\s+\S+\s+in\s+(?P<function>[^\s]+)\s+(?P<path>.+)$")
+_HUNK_FUNCTION_RE = re.compile(r"([A-Za-z_~][\w:~.]*)\s*\(")
 
 
 def directory_diff(before, after):
@@ -77,15 +79,30 @@ def _matches_changed_path(source_path, changed_path):
     )
 
 
+def _hunk_function(header):
+    context = header.split("@@", 2)[-1]
+    match = _HUNK_FUNCTION_RE.search(context)
+    return match.group(1) if match else None
+
+
 def correlate(diff, stdout, stderr, proximity=12, side="old"):
     locations = []
     for match in _LOCATION_RE.finditer(f"{stdout}\n{stderr}"):
-        locations.append({"path": match.group(1), "line": int(match.group(2))})
+        raw_path = match.group("path").strip()
+        frame = _FRAME_PREFIX_RE.match(raw_path)
+        locations.append({"path": frame.group("path").strip() if frame else raw_path,
+                          "line": int(match.group("line")),
+                          "function": frame.group("function") if frame else None})
     matches = []
     for location in locations:
         for hunk in diff.get("hunks", []):
             hunk_path = hunk.get("path") or ""
             if not _matches_changed_path(location["path"], hunk_path):
+                continue
+            hunk_function = _hunk_function(hunk.get("header", ""))
+            trace_function = location.get("function")
+            same_function = bool(trace_function and hunk_function and trace_function == hunk_function)
+            if trace_function and hunk_function and not same_function:
                 continue
             start_key = "old_start" if side == "old" else "new_start"
             count_key = "old_count" if side == "old" else "new_count"
@@ -94,12 +111,14 @@ def correlate(diff, stdout, stderr, proximity=12, side="old"):
             line = location["line"]
             if count > 0 and start <= line < start + count:
                 relation = "changed_line"
-            elif max(1, start - proximity) <= line <= start + max(count - 1, 0) + proximity:
+            elif (same_function and
+                  max(1, start - proximity) <= line <= start + max(count - 1, 0) + proximity):
                 relation = "nearby_line"
             else:
                 continue
             matches.append({"location": location, "hunk": hunk["header"],
-                            "path": hunk_path, "relation": relation})
+                            "path": hunk_path, "hunk_function": hunk_function,
+                            "same_function": same_function, "relation": relation})
     direct_match = any(match["relation"] == "changed_line" for match in matches)
     return {"related": bool(matches),
             "evidence_level": "direct" if direct_match else ("nearby" if matches else "none"),

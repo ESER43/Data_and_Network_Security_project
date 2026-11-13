@@ -74,7 +74,7 @@ The diagram simplifies an important detail: test findings, fuzz findings, build 
 - **`parse_hunks(diff_text)`** — Extracts changed-file paths and old/new line ranges; preserves explicit zero counts for insertion/deletion hunks.
 - **`_path_parts(path)`** — Normalizes slash direction and splits a path into comparable components.
 - **`_matches_changed_path(source_path, changed_path)`** — Checks whether the changed path is a component-wise suffix of the compiler-reported source path, avoiding basename-only matches when directories are available.
-- **Key — `correlate(diff, stdout, stderr, proximity, side)`** — Extracts C/C++ stack-trace locations and matches them to the appropriate old/new hunk ranges. It labels matches `changed_line` or `nearby_line` and reports an evidence level.
+- **Key — `correlate(diff, stdout, stderr, proximity, side)`** — Extracts C/C++ stack-trace locations and matches them to the appropriate old/new hunk ranges. Direct changed-line matches are reported; nearby matches count only when the trace and hunk identify the same function.
 
 ## `patchguard/evaluate.py`
 
@@ -125,6 +125,7 @@ The diagram simplifies an important detail: test findings, fuzz findings, build 
 - **`RegressionCorpusTests.test_confirmed_finding_round_trips_and_validates()`** — Checks writing/loading a corpus case and rejecting a tampered input hash.
 - **`RegressionCorpusTests.test_replay_classifies_fixed_and_still_vulnerable_cases()`** — Checks stored cases become `FIXED` or `VULN_REMAINS` from replay observations.
 - **`FuzzClassificationTests.test_unstable_baseline_does_not_become_new_issue()`** — Guards against calling an issue “new” when the baseline itself fails inconsistently.
+- **`DiffCorrelationTests.test_nearby_match_requires_same_function()`** — Ensures a nearby trace in another function of the same file is not treated as causal correlation.
 - **`ElfHardeningParsingTests.test_nx_uses_gnu_stack_permissions()`** — Checks NX classification from GNU_STACK permissions, including missing-header behavior.
 
 ## Benchmark program functions
@@ -135,9 +136,11 @@ The `repository/` and `versions/` C files are readable snapshots. During evaluat
 - **`inih_bridge` — `on_value(...)`** — Filters accepted section/key pairs and stores the value. The vulnerable version uses unchecked `strcpy`; correct/unseen variants check length before copying; incomplete protects only one key; regression rejects a valid boundary value.
 - **`capacity_reader` — `main()`** — Parses requested capacity and payload from stdin, allocates a buffer, copies/prints payload, and exits with the relevant error code. Each branch varies its overflow and boundary checks.
 - **`capacity_reader` unseen branch — `add_capacity(requested, allocation_size)`** — Validates the requested size and maximum, computes the allocation size only when safe, and reports success through its return value.
+- **`cjson` — `main()` in `patchguard_cjson_driver.c`** — Parses `initial|replacement` from stdin, creates a real cJSON string, calls `cJSON_SetValuestring`, and prints either the replacement or a rejection.
+- **`cJSON_SetValuestring(...)` in upstream `cJSON.c`** — Updates an existing JSON string. Upstream `v1.7.17` dereferences a NULL replacement while measuring it; the upstream fix checks for NULL before calling `strlen`.
 
-The many `main.c` files represent the two targets’ repository snapshots and patch variants; they do not mean the evaluator runs every copy in one invocation. `vendor/inih/ini.c` is third-party parser implementation and is outside the PatchGuard function-by-function list above.
+The many target-source files represent repository snapshots and patch variants; they do not mean the evaluator runs every copy in one invocation. `vendor/inih/ini.c` and the upstream cJSON sources are third-party library implementation code, so the walkthrough describes their relevant entry points rather than every upstream function.
 
 ## Interpretation note
 
-`nearby_line` is still included in `related` for compatibility with the current benchmark classifications. It is explicitly labeled as weaker evidence in reports; whether it should instead force `INCONCLUSIVE` is the rubric interpretation question to confirm with the TA.
+`nearby_line` is included in `related` only when both the sanitizer frame and Git hunk identify the same function. Frames from a different function in the same source file are no longer treated as correlation evidence. Reports include the trace function, hunk function, path, line, and relation so the reviewer can assess the link.
