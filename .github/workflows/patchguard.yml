@@ -1,0 +1,62 @@
+name: PatchGuard scenarios
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Restore prior minimized regression cases
+        uses: actions/cache@v4
+        with:
+          path: regression_corpus/
+          key: ${{ runner.os }}-patchguard-regressions-${{ github.ref_name }}-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-patchguard-regressions-${{ github.ref_name }}-
+      - name: Install native build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes build-essential binutils
+      - name: Check combined exit-code priority
+        run: python3 -m unittest discover -s tests -v
+      - name: Check correct patch scenarios
+        run: python3 -m patchguard project.json --scenario correct-patch --output artifacts/correct.json
+      - name: Check incomplete patches report code 10
+        shell: bash
+        run: |
+          set +e
+          python3 -m patchguard project.json --scenario incomplete-patch --output artifacts/incomplete.json
+          status=$?
+          set -e
+          if [ "$status" -ne 10 ]; then
+            echo "Expected exit code 10, received $status"
+            exit 1
+          fi
+      - name: Check regressions report code 20
+        shell: bash
+        run: |
+          set +e
+          python3 -m patchguard project.json --scenario regression-patch --output artifacts/regression.json
+          status=$?
+          set -e
+          if [ "$status" -ne 20 ]; then
+            echo "Expected exit code 20, received $status"
+            exit 1
+          fi
+      - name: Check unseen-style patches
+        run: python3 -m patchguard project.json --scenario unseen-style-patch --output artifacts/unseen.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: patchguard-reports
+          path: |
+            artifacts/
+            regression_corpus/
