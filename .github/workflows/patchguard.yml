@@ -47,7 +47,7 @@ jobs:
           python3 -m patchguard project.json --scenario regression-patch --output artifacts/regression.json
           status=$?
           set -e
-          if [ "$status" -ne 0 ]; then
+          if [ "$status" -ne 20 ]; then
             echo "Expected exit code 20, received $status"
             exit 1
           fi
