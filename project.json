@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "workspace": ".",
+  "regression_corpus": "regression_corpus",
+  "fuzz_seed": 2026,
+  "targets": [
+    {
+      "name": "inih-config-bridge",
+      "repository": "benchmarks/inih_bridge/benchmark.bundle",
+      "versions": {
+        "vulnerable": "vulnerable",
+        "correct": "correct",
+        "incomplete": "incomplete",
+        "regression": "regression",
+        "unseen": "unseen"
+      },
+      "timeout_seconds": 3,
+      "fuzz_iterations": 32,
+      "build": {
+        "release": [
+          "cc", "-std=c11", "-O2", "-g", "-fno-omit-frame-pointer",
+          "-fPIE", "-pie", "-Wl,-z,relro,-z,now", "-fstack-protector-strong",
+          "-I{workspace}/vendor/inih", "{source}/main.c",
+          "{workspace}/vendor/inih/ini.c", "-o", "{build}/target"
+        ],
+        "instrumented": [
+          "cc", "-std=c11", "-O1", "-g", "-fno-omit-frame-pointer",
+          "-fsanitize=address,undefined", "-fPIE", "-pie",
+          "-Wl,-z,relro,-z,now", "-fstack-protector-strong",
+          "-I{workspace}/vendor/inih", "{source}/main.c",
+          "{workspace}/vendor/inih/ini.c", "-o", "{build}/target"
+        ],
+        "executable": "{build}/target"
+      },
+      "tests": [
+        {
+          "name": "long_path_overflow",
+          "kind": "security",
+          "stdin_file": "benchmarks/inih_bridge/inputs/long_path.ini",
+          "fuzz": true
+        },
+        {
+          "name": "long_mirror_overflow",
+          "kind": "security",
+          "stdin_file": "benchmarks/inih_bridge/inputs/long_mirror.ini"
+        },
+        {
+          "name": "short_valid_path",
+          "kind": "functional",
+          "stdin_file": "benchmarks/inih_bridge/inputs/short_path.ini",
+          "expected_stdout": "OK:short\n",
+          "expected_exit": 0
+        },
+        {
+          "name": "maximum_valid_path",
+          "kind": "functional",
+          "stdin_file": "benchmarks/inih_bridge/inputs/boundary_path.ini",
+          "expected_stdout_contains": "OK:BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+          "expected_exit": 0
+        }
+      ],
+      "scenarios": [
+        {"name": "correct-patch", "candidate": "correct"},
+        {"name": "incomplete-patch", "candidate": "incomplete"},
+        {"name": "regression-patch", "candidate": "regression"},
+        {"name": "unseen-style-patch", "candidate": "unseen"}
+      ]
+    },
+    {
+      "name": "capacity-reader",
+      "repository": "benchmarks/capacity_reader/benchmark.bundle",
+      "versions": {
+        "vulnerable": "vulnerable",
+        "correct": "correct",
+        "incomplete": "incomplete",
+        "regression": "regression",
+        "unseen": "unseen"
+      },
+      "timeout_seconds": 3,
+      "fuzz_iterations": 32,
+      "build": {
+        "release": [
+          "cc", "-std=c11", "-O2", "-g", "-fno-omit-frame-pointer",
+          "-fPIE", "-pie", "-Wl,-z,relro,-z,now", "-fstack-protector-strong",
+          "{source}/main.c", "-o", "{build}/target"
+        ],
+        "instrumented": [
+          "cc", "-std=c11", "-O1", "-g", "-fno-omit-frame-pointer",
+          "-fsanitize=address,undefined", "-fPIE", "-pie",
+          "-Wl,-z,relro,-z,now", "-fstack-protector-strong",
+          "{source}/main.c", "-o", "{build}/target"
+        ],
+        "executable": "{build}/target"
+      },
+      "tests": [
+        {
+          "name": "addition_wrap_overflow",
+          "kind": "security",
+          "stdin_file": "benchmarks/capacity_reader/inputs/overflow.txt",
+          "fuzz": true
+        },
+        {
+          "name": "alternate_wrap_overflow",
+          "kind": "security",
+          "stdin_file": "benchmarks/capacity_reader/inputs/overflow_alternate.txt"
+        },
+        {
+          "name": "ordinary_capacity",
+          "kind": "functional",
+          "stdin_file": "benchmarks/capacity_reader/inputs/valid.txt",
+          "expected_stdout": "OK:hello\n",
+          "expected_exit": 0
+        },
+        {
+          "name": "boundary_capacity",
+          "kind": "functional",
+          "stdin_file": "benchmarks/capacity_reader/inputs/boundary.txt",
+          "expected_stdout_contains": "OK:BBBBBBBBBBBBBBBB",
+          "expected_exit": 0
+        }
+      ],
+      "scenarios": [
+        {"name": "correct-patch", "candidate": "correct"},
+        {"name": "incomplete-patch", "candidate": "incomplete"},
+        {"name": "regression-patch", "candidate": "regression"},
+        {"name": "unseen-style-patch", "candidate": "unseen"}
+      ]
+    }
+  ]
+}

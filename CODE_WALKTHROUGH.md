@@ -1,0 +1,143 @@
+# PatchGuard Code Walkthrough
+
+This guide describes every function in `patchguard/` and the test functions in `tests/`. **Key** marks the functions that control the main decisions and execution order.
+
+## Execution flow
+
+```mermaid
+flowchart TD
+    A[CLI: main] --> B{Linux x86-64?}
+    B -- no --> X[Exit 30: build/config error]
+    B -- yes --> C[Load and validate project.json]
+    C --> D{Config and selection valid?}
+    D -- no --> X
+    D -- yes --> E[For each selected target and scenario]
+    E --> F[Resolve vulnerable baseline and candidate]
+    F --> G[Generate Git diff and changed hunks]
+    G --> H{Diff and source valid?}
+    H -- no --> X
+    H -- yes --> I[Build baseline and candidate: release + ASan/UBSan]
+    I --> J{All builds succeed?}
+    J -- no --> X
+    J -- yes --> K[Load ordinary tests and stored corpus cases]
+    K --> L[Run baseline and candidate tests]
+    L --> M{Test classification}
+    M -->|security stays / new issue| N[10]
+    M -->|functional behavior regresses| O[20]
+    M -->|not reproducible / evidence insufficient| P[40]
+    M -->|fixed and oracle passes| Q[0]
+    L --> R[Minimize and write reproducer evidence]
+    R --> S[Run deterministic fuzz mutations]
+    S --> T[Compare ELF hardening]
+    T --> U[Write per-scenario JSON]
+    N --> V[Aggregate status using priority 30, 10, 20, 40, 0]
+    O --> V
+    P --> V
+    Q --> V
+    U --> V
+    V --> W[Write project JSON and return exit code]
+```
+
+The diagram simplifies an important detail: test findings, fuzz findings, build errors, and inconclusive outcomes are all retained in the JSON. The project-level exit code is the highest-priority status among the selected scenarios.
+
+## `patchguard/cli.py`
+
+- **`_candidate(value)`** — Parses `TARGET=SOURCE_DIRECTORY` and rejects missing names or paths.
+- **Key — `main(argv=None)`** — Parses CLI options, checks the platform/configuration and selections, calls `evaluate_project`, writes JSON, and returns the documented exit code. User-facing configuration or execution errors return 30.
+
+## `patchguard/__main__.py` and `patchguard/__init__.py`
+
+- **`__main__.py` entry point** — Imports `cli.main()` and exits with its returned status when invoked as `python -m patchguard`.
+- **`__init__.py`** — Exposes the package version; it defines no functions.
+
+## `patchguard/config.py`
+
+- **`_need(condition, message)`** — Raises `PatchGuardError` when a configuration requirement is false.
+- **Key — `load_project(path)`** — Reads and validates the JSON schema, workspace, targets, bundles/refs, build commands, scenarios, and test definitions; returns normalized paths for execution.
+- **`test_input(test, workspace)`** — Reads test bytes from base64, a configured file, or inline text, in that precedence order.
+
+## `patchguard/process.py`
+
+- **`require_linux_x86_64()`** — Rejects execution outside Linux x86-64, the platform supported by this project.
+- **`_expand(command, values)`** — Replaces `{workspace}`, `{source}`, and `{build}` placeholders in a command argument list.
+- **Key — `build_target(target, source, workspace, build_root, mode)`** — Runs the configured release or instrumented compiler command and records command, environment, compiler version, and logs; a failed build raises `BuildError`.
+- **Key — `run_program(executable, test, input_bytes, timeout_seconds, extra_env, limits)`** — Runs one test in a new process group with stdin, resource limits, captured output, and failure detection; returns a structured observation.
+- **`apply_limits()`** *(nested in `run_program`)* — Sets CPU, core-dump, output-file, and open-file limits before the target starts.
+- **`_decode(data)`** — Converts bytes or other values to text with replacement for invalid UTF-8. It is currently a utility and is not called by the main execution path.
+- **Key — `detect_failure(returncode, stdout, stderr, timed_out)`** — Recognizes sanitizer reports, timeouts, output-limit failures, and terminating signals, including an error type where available.
+- **`find_executable(name)`** — Returns an executable path from `PATH`; it is currently unused by the evaluator.
+
+## `patchguard/diffing.py`
+
+- **`directory_diff(before, after)`** — Gets a no-index Git diff between two source directories and parses its hunks.
+- **`revision_diff(repository, before_ref, after_ref)`** — Gets the Git diff between two refs in a repository or bundle cache.
+- **`parse_hunks(diff_text)`** — Extracts changed-file paths and old/new line ranges; preserves explicit zero counts for insertion/deletion hunks.
+- **`_path_parts(path)`** — Normalizes slash direction and splits a path into comparable components.
+- **`_matches_changed_path(source_path, changed_path)`** — Checks whether the changed path is a component-wise suffix of the compiler-reported source path, avoiding basename-only matches when directories are available.
+- **Key — `correlate(diff, stdout, stderr, proximity, side)`** — Extracts C/C++ stack-trace locations and matches them to the appropriate old/new hunk ranges. It labels matches `changed_line` or `nearby_line` and reports an evidence level.
+
+## `patchguard/evaluate.py`
+
+- **`source_fingerprint(source)`** — Computes a stable SHA-256 fingerprint over source-file paths and contents, excluding `.git` entries.
+- **`git_revision(source)`** — Returns a checked-out source directory’s commit hash, or `None` when it has no Git metadata.
+- **`ref_revision(repository, ref)`** — Resolves a ref to a commit hash, or returns `None` if it cannot be resolved.
+- **`prepare_repository(repository, cache_root)`** — Uses a directory repository directly or clones/refreshes a bare cache from a Git bundle.
+- **`extract_ref(repository, ref, revision, root, role)`** — Exports a Git ref to an isolated source directory after rejecting unsafe archive paths and links.
+- **Key — `_aggregate(codes)`** — Applies the assignment’s priority: 30, then 10, 20, 40, and finally 0.
+- **`_trim_observation(observation)`** — Bounds stdout/stderr stored in the report and marks truncated output.
+- **`_run_many(executable, test, data, target, repetitions)`** — Executes the same test repeatedly and trims each observation.
+- **`_failure_state(runs)`** — Returns a stable failure signature only when every repetition reports the same failure kind and error type.
+- **`_failure_signature(runs)`** — Serializes every repetition’s failure kind/type, including clean runs, for later corpus validation.
+- **`_safe_component(value)`** — Converts names to filesystem-safe path components.
+- **`_load_regression_cases(corpus_root, target_name)`** — Loads corpus JSON, validates hashes/signatures/target, and prepares each stored case as a security test.
+- **`_valid_signature(signature)`** — Checks that a saved failure signature has the expected three-run shape and value types.
+- **`_save_regression_case(...)`** — Writes a newly confirmed minimized input, its hash, source scenario/revision, and baseline/candidate signatures without overwriting an existing case.
+- **`_matches_expected(run, test)`** — Checks a functional run’s expected exit code and exact or contained stdout, requiring no detected failure.
+- **`_correlation_state(diff, runs, side)`** — Correlates the first detected failure’s trace with the old or new diff side and attaches its failure type.
+- **Key — `_evaluate_test(...)`** — Runs a test on baseline/candidate release and instrumented builds, then classifies functional behavior, security fixes, remaining flaws, new issues, or inconclusive evidence.
+- **`_write_reproducer(...)`** — Minimizes a security input while preserving its failure signature, replays it, and writes JSON containing inputs, hashes, command, build/runtime environment, commit, and observations.
+- **`reproduces(candidate)`** *(nested in `_write_reproducer`)* — Reruns a minimized candidate input and accepts it only if the same failure kind/type remains.
+- **Key — `_classify_fuzz_finding(baseline_runs, candidate_runs, diff)`** — Compares stable baseline and candidate failure signatures; an unstable baseline is inconclusive rather than being mislabeled as a new issue.
+- **Key — `_fuzz_candidate(...)`** — Mutates configured fuzz seeds deterministically, repeats candidate/baseline runs, minimizes findings, stores confirmed regression cases, and returns the evidence records.
+- **Key — `_evaluate_scenario(...)`** — Resolves baseline/candidate sources, diffs and builds both modes, runs regular and corpus tests, fuzzes, inspects hardening, then returns one scenario report and status.
+- **Key — `evaluate_project(...)`** — Selects targets/scenarios, calls `_evaluate_scenario` for each, catches per-scenario configuration/execution failures, and aggregates the project report and exit code.
+
+## `patchguard/fuzz.py` and `patchguard/minimize.py`
+
+- **`mutate(data, rng)`** — Makes one deterministic-seed byte deletion, insertion, or replacement using a small input-oriented alphabet.
+- **`minimize_bytes(original, reproduces, max_attempts)`** — Repeatedly removes input chunks while the supplied predicate still reproduces the same finding, stopping at the attempt limit.
+
+## `patchguard/hardening.py`
+
+- **Key — `inspect_elf(executable)`** — Uses `readelf` to inspect PIE, NX stack, RELRO, and stack-canary properties of one binary.
+- **Key — `compare_hardening(before, after)`** — Compares baseline and candidate protections and reports weakened properties as warnings.
+- **`_readelf(args, executable)`** — Runs one `readelf` query and returns availability, exit status, and output.
+- **`_nx_stack_from_program_headers(program_headers)`** — Determines whether the GNU_STACK program header permits execution.
+
+## `patchguard/errors.py`
+
+- **`PatchGuardError`** — Base exception for configuration and user-facing execution errors.
+- **`BuildError.__init__(message, record)`** — Stores a readable build error and the build command/output record when available.
+
+## Test functions
+
+- **`ExitCodePriorityTests.test_assignment_priority()`** — Checks the required aggregate priority for codes 30, 10, 20, 40, and 0.
+- **`RegressionCorpusTests.test_confirmed_finding_round_trips_and_validates()`** — Checks writing/loading a corpus case and rejecting a tampered input hash.
+- **`RegressionCorpusTests.test_replay_classifies_fixed_and_still_vulnerable_cases()`** — Checks stored cases become `FIXED` or `VULN_REMAINS` from replay observations.
+- **`FuzzClassificationTests.test_unstable_baseline_does_not_become_new_issue()`** — Guards against calling an issue “new” when the baseline itself fails inconsistently.
+- **`ElfHardeningParsingTests.test_nx_uses_gnu_stack_permissions()`** — Checks NX classification from GNU_STACK permissions, including missing-header behavior.
+
+## Benchmark program functions
+
+The `repository/` and `versions/` C files are readable snapshots. During evaluation, PatchGuard extracts and compiles the selected Git bundle refs; these snapshot files are not independently invoked by the evaluator.
+
+- **`inih_bridge` — `main()`** — Reads INI text from stdin, calls the vendored parser with `on_value`, and prints the resulting stored value or returns a parse error.
+- **`inih_bridge` — `on_value(...)`** — Filters accepted section/key pairs and stores the value. The vulnerable version uses unchecked `strcpy`; correct/unseen variants check length before copying; incomplete protects only one key; regression rejects a valid boundary value.
+- **`capacity_reader` — `main()`** — Parses requested capacity and payload from stdin, allocates a buffer, copies/prints payload, and exits with the relevant error code. Each branch varies its overflow and boundary checks.
+- **`capacity_reader` unseen branch — `add_capacity(requested, allocation_size)`** — Validates the requested size and maximum, computes the allocation size only when safe, and reports success through its return value.
+
+The many `main.c` files represent the two targets’ repository snapshots and patch variants; they do not mean the evaluator runs every copy in one invocation. `vendor/inih/ini.c` is third-party parser implementation and is outside the PatchGuard function-by-function list above.
+
+## Interpretation note
+
+`nearby_line` is still included in `related` for compatibility with the current benchmark classifications. It is explicitly labeled as weaker evidence in reports; whether it should instead force `INCONCLUSIVE` is the rubric interpretation question to confirm with the TA.

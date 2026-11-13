@@ -1,0 +1,25 @@
+{
+  "expected_baseline_signature": [
+    ["address_sanitizer", "requested"],
+    ["address_sanitizer", "requested"],
+    ["address_sanitizer", "requested"]
+  ],
+  "expected_candidate_signature": [
+    ["address_sanitizer", "requested"],
+    ["address_sanitizer", "requested"],
+    ["address_sanitizer", "requested"]
+  ],
+  "finding_classification": "VULN_REMAINS",
+  "schema_version": 1,
+  "source_candidate_revision": "7336cab5beee2f04a5efaef00232d35bc7476abf",
+  "source_scenario": "incomplete-patch",
+  "stdin_base64": "NDQ2NzQ0MDc1MTYxMApB",
+  "stdin_sha256": "b8cf6a6a783e285dc413ffbd57e7f3e619f868744413e0e02c7479baa6cb0705",
+  "target": "capacity-reader",
+  "test_definition": {
+    "fuzz": true,
+    "kind": "security",
+    "name": "addition_wrap_overflow",
+    "stdin_file": "benchmarks/capacity_reader/inputs/overflow.txt"
+  }
+}
