@@ -1,0 +1,43 @@
+{
+  "expected_baseline_signature": [
+    [
+      "undefined_behavior_sanitizer",
+      "null pointer passed as argument 1, which is declared to never be null"
+    ],
+    [
+      "undefined_behavior_sanitizer",
+      "null pointer passed as argument 1, which is declared to never be null"
+    ],
+    [
+      "undefined_behavior_sanitizer",
+      "null pointer passed as argument 1, which is declared to never be null"
+    ]
+  ],
+  "expected_candidate_signature": [
+    [
+      "undefined_behavior_sanitizer",
+      "null pointer passed as argument 1, which is declared to never be null"
+    ],
+    [
+      "undefined_behavior_sanitizer",
+      "null pointer passed as argument 1, which is declared to never be null"
+    ],
+    [
+      "undefined_behavior_sanitizer",
+      "null pointer passed as argument 1, which is declared to never be null"
+    ]
+  ],
+  "finding_classification": "VULN_REMAINS",
+  "schema_version": 1,
+  "source_candidate_revision": "29753beb2f7a6563f44795076fa1bb530e4738c0",
+  "source_scenario": "incomplete-patch",
+  "stdin_base64": "fE5VTEw=",
+  "stdin_sha256": "0ecef79464982a63bc029256a9a70a5fbbfe845f8b9212b4bbb928fa3fc3c403",
+  "target": "cjson",
+  "test_definition": {
+    "fuzz": true,
+    "kind": "security",
+    "name": "null_replacement_crash",
+    "stdin_file": "benchmarks/cjson/inputs/null_replacement.txt"
+  }
+}

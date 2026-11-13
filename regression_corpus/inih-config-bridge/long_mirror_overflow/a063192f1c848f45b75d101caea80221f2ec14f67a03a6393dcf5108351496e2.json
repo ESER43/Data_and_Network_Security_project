@@ -1,0 +1,42 @@
+{
+  "expected_baseline_signature": [
+    [
+      "address_sanitizer",
+      "stack-buffer-overflow"
+    ],
+    [
+      "address_sanitizer",
+      "stack-buffer-overflow"
+    ],
+    [
+      "address_sanitizer",
+      "stack-buffer-overflow"
+    ]
+  ],
+  "expected_candidate_signature": [
+    [
+      "address_sanitizer",
+      "stack-buffer-overflow"
+    ],
+    [
+      "address_sanitizer",
+      "stack-buffer-overflow"
+    ],
+    [
+      "address_sanitizer",
+      "stack-buffer-overflow"
+    ]
+  ],
+  "finding_classification": "VULN_REMAINS",
+  "schema_version": 1,
+  "source_candidate_revision": "6d152451269408eee9682df7969d1b39cac7a46f",
+  "source_scenario": "incomplete-patch",
+  "stdin_base64": "W3N0b3JhZ2VdCm1pcnJvcj1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTQ==",
+  "stdin_sha256": "a063192f1c848f45b75d101caea80221f2ec14f67a03a6393dcf5108351496e2",
+  "target": "inih-config-bridge",
+  "test_definition": {
+    "kind": "security",
+    "name": "long_mirror_overflow",
+    "stdin_file": "benchmarks/inih_bridge/inputs/long_mirror.ini"
+  }
+}

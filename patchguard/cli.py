@@ -18,6 +18,22 @@ def _candidate(value):
     return name, path
 
 
+def _summary(report, output_path):
+    lines = [f"PatchGuard: {report['status']} (exit {report['exit_code']})",
+             f"report: {output_path}"]
+    for target in report.get("targets", []):
+        lines.append(f"target {target['name']}")
+        for scenario in target.get("scenarios", []):
+            lines.append(f"  scenario {scenario['name']}: {scenario['status']} (exit {scenario['code']})")
+            for test in scenario.get("tests", []):
+                lines.append(f"    {test['name']} [{test['kind']}]: {test['status']} - {test['reason']}")
+            for finding in scenario.get("fuzz", {}).get("findings", []):
+                lines.append(f"    fuzz {finding['test']}: {finding['classification']}")
+            for warning in scenario.get("hardening", {}).get("comparison", {}).get("warnings", []):
+                lines.append(f"    hardening: {warning}")
+    return "\n".join(lines)
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(prog="patchguard", description="Evaluate native security patches with reproducible runs.")
     parser.add_argument("config", nargs="?", default="project.json", help="project JSON configuration")
@@ -65,7 +81,8 @@ def main(argv=None):
         output_path.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
         print(json.dumps({"status": report["status"], "exit_code": report["exit_code"],
                           "report": str(output_path)}, ensure_ascii=False))
+        print(_summary(report, output_path))
         return report["exit_code"]
-    except (PatchGuardError, OSError) as exc:
+    except (PatchGuardError, OSError, ValueError, TypeError, KeyError, AttributeError) as exc:
         print(json.dumps({"status": "BUILD_OR_CONFIG_ERROR", "exit_code": 30, "error": str(exc)}, ensure_ascii=False), file=sys.stderr)
         return 30

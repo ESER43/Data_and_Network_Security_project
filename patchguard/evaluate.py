@@ -20,7 +20,13 @@ from .process import build_target, run_program
 
 
 REPEAT_COUNT = 3
-CODE_PRIORITY = (30, 10, 20, 40)
+# Assignment priority: build/config errors first, then functional regressions,
+# then remaining/new security findings, then inconclusive runs, then PASS.
+CODE_PRIORITY = (30, 20, 10, 40)
+# Minimizing the same input against the same binary is deterministic, and the
+# baseline reproducer is regenerated for every scenario of a target (and for the
+# candidate of an equivalent patch), so results are memoized per binary/input.
+_MINIMIZATION_CACHE = {}
 
 
 def source_fingerprint(source):
@@ -34,6 +40,14 @@ def source_fingerprint(source):
         data = path.read_bytes()
         digest.update(len(data).to_bytes(8, "big"))
         digest.update(data)
+    return digest.hexdigest()
+
+
+def file_sha256(path):
+    digest = hashlib.sha256()
+    with open(path, "rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
     return digest.hexdigest()
 
 
@@ -178,9 +192,32 @@ def _valid_signature(signature):
                 for item in signature))
 
 
+def _find_stored_case(corpus_root, target_name, digest):
+    """Return an existing corpus file for this input, whatever test discovered it.
+
+    Different seeds and scenarios converge on the same minimized input, and every
+    stored case is replayed for every later candidate, so duplicates would grow the
+    corpus and the runtime without adding coverage.
+    """
+    target_root = Path(corpus_root) / _safe_component(target_name)
+    if not target_root.is_dir():
+        return None
+    for candidate in sorted(target_root.rglob("*.json")):
+        try:
+            record = json.loads(candidate.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        if record.get("stdin_sha256") == digest:
+            return candidate
+    return None
+
+
 def _save_regression_case(corpus_root, target_name, test, input_data, classification,
                           scenario_name, candidate_revision, baseline_runs, candidate_runs):
     digest = hashlib.sha256(input_data).hexdigest()
+    existing = _find_stored_case(corpus_root, target_name, digest)
+    if existing is not None:
+        return {"path": str(existing), "sha256": digest, "created": False}
     folder = Path(corpus_root) / _safe_component(target_name) / _safe_component(test["name"])
     path = folder / f"{digest}.json"
     folder.mkdir(parents=True, exist_ok=True)
@@ -216,6 +253,18 @@ def _matches_expected(run, test):
     if contains is not None and contains not in run.get("stdout", ""):
         return False
     return True
+
+
+def _crash_site(runs):
+    run = next((run for run in runs if run.get("failure")), None)
+    if run is None:
+        return None
+    locations = correlate({"hunks": []}, run.get("stdout", ""), run.get("stderr", ""))["locations"]
+    if not locations:
+        return None
+    first = locations[0]
+    return {"file": str(first["path"]).replace("\\", "/").rsplit("/", 1)[-1],
+            "line": first["line"], "function": first.get("function")}
 
 
 def _correlation_state(diff, runs, side="old"):
@@ -326,6 +375,8 @@ def _write_reproducer(bundle_root, test, input_data, target, source, finding, ex
     minimized = input_data
     attempts = 0
     replay = []
+    replay_state = None
+    binary = _binary_record(executable)
     if finding and test["kind"] == "security":
         expected_kind = finding["kind"] if isinstance(finding, dict) else finding
         expected_type = finding.get("error_type") if isinstance(finding, dict) else None
@@ -338,7 +389,15 @@ def _write_reproducer(bundle_root, test, input_data, target, source, finding, ex
                 expected_type is None or observed.get("error_type") == expected_type
             )
 
-        minimized, attempts = minimize_bytes(input_data, reproduces)
+        cache_key = (binary.get("sha256"), hashlib.sha256(input_data).hexdigest(),
+                     expected_kind, expected_type)
+        cached = _MINIMIZATION_CACHE.get(cache_key) if binary.get("available") else None
+        if cached is None:
+            minimized, attempts = minimize_bytes(input_data, reproduces)
+            if binary.get("available"):
+                _MINIMIZATION_CACHE[cache_key] = (minimized, attempts)
+        else:
+            minimized, attempts = cached
         replay = _run_many(executable, test, minimized, target, REPEAT_COUNT)
         replay_state = _failure_state(replay)
         if not replay_state["stable"] or replay_state["kind"] != expected_kind or (
@@ -384,6 +443,8 @@ def _write_reproducer(bundle_root, test, input_data, target, source, finding, ex
             "python": sys.version,
         },
         "finding": finding,
+        "binary": binary,
+        "replay_stable": None if replay_state is None else replay_state["stable"],
         "reproduction_count": REPEAT_COUNT if test["kind"] == "security" else 1,
         "minimization_attempts": attempts,
         "original_stdin_sha256": hashlib.sha256(input_data).hexdigest(),
@@ -395,6 +456,16 @@ def _write_reproducer(bundle_root, test, input_data, target, source, finding, ex
     safe_name = re.sub(r"[^A-Za-z0-9_.-]+", "_", test["name"])
     (bundle_root / f"{safe_name}.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
     return payload
+
+
+def _binary_record(executable):
+    path = Path(executable)
+    try:
+        stat = path.stat()
+        digest = file_sha256(path)
+    except OSError as exc:
+        return {"path": str(path), "available": False, "reason": str(exc)}
+    return {"path": str(path), "available": True, "sha256": digest, "size": stat.st_size}
 
 
 def _classify_fuzz_finding(baseline_runs, candidate_runs, diff):
@@ -411,10 +482,15 @@ def _classify_fuzz_finding(baseline_runs, candidate_runs, diff):
         candidate_state["kind"], candidate_state["error_type"]
     ):
         correlation = _correlation_state(diff, baseline_runs, side="old")
-        classification = "VULN_REMAINS" if correlation["related"] else "INCONCLUSIVE"
-    else:
-        correlation = _correlation_state(diff, candidate_runs, side="new")
-        classification = "NEW_ISSUE" if correlation["related"] else "INCONCLUSIVE"
+        if _crash_site(baseline_runs) is not None and _crash_site(baseline_runs) == _crash_site(candidate_runs):
+            return "VULN_REMAINS", correlation, baseline_state
+        if correlation["related"]:
+            return "VULN_REMAINS", correlation, baseline_state
+        # The same failure class exists in both builds at a different site and has
+        # no link to the patch: a pre-existing defect of the target, not this patch.
+        return "PRE_EXISTING_UNRELATED", correlation, baseline_state
+    correlation = _correlation_state(diff, candidate_runs, side="new")
+    classification = "NEW_ISSUE" if correlation["related"] else "INCONCLUSIVE"
     return classification, correlation, baseline_state
 
 
@@ -585,11 +661,20 @@ def _evaluate_scenario(target, scenario, workspace, output_root, fuzz_seed):
                 )
             candidate_finding = _failure_state(result["runs"]["candidate"]["instrumented"])
             if candidate_finding["stable"]:
-                _write_reproducer(
+                candidate_bundle = _write_reproducer(
                     scenario_root / "reproducers" / "candidate", test, input_data, target_for_evidence, after,
                     candidate_finding, candidate_bins["instrumented"], baseline=False,
                     revision=candidate_revision,
                 )
+                # Only configured tests may seed the corpus: replaying a stored case
+                # must not store another copy of itself under a derived name.
+                if regression_case is None and result["status"] in {"VULN_REMAINS", "NEW_ISSUE"}:
+                    minimized_input = base64.b64decode(candidate_bundle["minimized_stdin_base64"], validate=True)
+                    result["regression_corpus_case"] = _save_regression_case(
+                        corpus_root, name, test, minimized_input, result["status"], scenario["name"],
+                        candidate_revision, result["runs"]["baseline"]["instrumented"],
+                        result["runs"]["candidate"]["instrumented"],
+                    )
         elif result["code"] != 0:
             _write_reproducer(
                 scenario_root / "reproducers" / "candidate", test, input_data, target_for_evidence, after,
@@ -616,8 +701,11 @@ def _evaluate_scenario(target, scenario, workspace, output_root, fuzz_seed):
         scenario_name=scenario["name"],
     )
     codes = [item["code"] for item in test_results]
-    codes.extend(10 if item["classification"] in {"VULN_REMAINS", "NEW_ISSUE"} else 40
-                 for item in fuzz_findings)
+    # Only attributed fuzz findings can change the verdict. Unstable repeats and
+    # pre-existing crashes outside the patch stay recorded in the report without
+    # turning a conclusive scenario into INCONCLUSIVE.
+    codes.extend(10 for item in fuzz_findings
+                 if item["classification"] in {"VULN_REMAINS", "NEW_ISSUE"})
     code = _aggregate(codes)
     test_statuses = {item["status"] for item in test_results}
     fuzz_statuses = {item["classification"] for item in fuzz_findings}
@@ -657,7 +745,8 @@ def _evaluate_scenario(target, scenario, workspace, output_root, fuzz_seed):
                  "test": case["test"]["name"]}
                 for case in replayed_cases
             ],
-            "new_cases": [item["regression_corpus_case"] for item in fuzz_findings
+            "new_cases": [item["regression_corpus_case"] for item in
+                          list(fuzz_findings) + list(test_results)
                           if item.get("regression_corpus_case", {}).get("created")],
         },
         "hardening": hardening,
@@ -691,7 +780,7 @@ def evaluate_project(project, output_root, target_filter=None, scenario_filter=N
                     scenario, workspace, output_root,
                     int(project.get("fuzz_seed", 2026)),
                 )
-            except (PatchGuardError, OSError, ValueError) as exc:
+            except (PatchGuardError, OSError, ValueError, TypeError) as exc:
                 scenario_result = {"name": scenario.get("name", "unknown"),
                                    "status": "BUILD_OR_CONFIG_ERROR", "code": 30, "error": str(exc)}
             scenario_results.append(scenario_result)

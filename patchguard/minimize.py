@@ -1,23 +1,34 @@
-def minimize_bytes(original, reproduces, max_attempts=32):
-    """Chunk-deletion minimization; the predicate must preserve the finding class."""
+import hashlib
+
+
+def minimize_bytes(original, reproduces, max_attempts=200):
+    """Delta-debugging style chunk deletion; the predicate preserves the finding."""
     current = original
     attempts = 0
-    granularity = 2
-    while len(current) >= 2 and attempts < max_attempts:
-        chunk = max(1, (len(current) + granularity - 1) // granularity)
+    seen = {hashlib.sha256(current).digest()}
+    chunk = max(1, len(current) // 2)
+    while len(current) > 1 and attempts < max_attempts and chunk >= 1:
         reduced = False
-        for start in range(0, len(current), chunk):
+        start = 0
+        while start < len(current) and attempts < max_attempts:
             candidate = current[:start] + current[start + chunk:]
+            if not candidate:
+                start += chunk
+                continue
+            digest = hashlib.sha256(candidate).digest()
+            if digest in seen:
+                start += chunk
+                continue
+            seen.add(digest)
             attempts += 1
-            if candidate and reproduces(candidate):
+            if reproduces(candidate):
                 current = candidate
-                granularity = max(2, granularity - 1)
                 reduced = True
-                break
-            if attempts >= max_attempts:
-                break
+                chunk = max(1, min(chunk, len(current) // 2)) if len(current) > 1 else 0
+            else:
+                start += chunk
         if not reduced:
-            if granularity >= len(current):
+            if chunk == 1:
                 break
-            granularity = min(len(current), granularity * 2)
+            chunk = max(1, chunk // 2)
     return current, attempts

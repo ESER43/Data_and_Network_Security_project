@@ -28,7 +28,21 @@ def inspect_elf(executable):
         "nx_stack": nx_stack,
         "relro": "full" if has_relro and bind_now else ("partial" if has_relro else "none"),
         "stack_canary": has_canary,
+        "evidence": {
+            "elf_type": _line_with(header_text, "Type:"),
+            "nx_stack": _line_with(phdr_text, "GNU_STACK"),
+            "relro": _line_with(phdr_text, "GNU_RELRO"),
+            "bind_now": _line_with(dynamic_text, "BIND_NOW") or _line_with(dynamic_text, "FLAGS"),
+            "stack_canary": _line_with(symbol_text, "__stack_chk_fail"),
+        },
     }
+
+
+def _line_with(text, needle):
+    for line in text.splitlines():
+        if needle in line:
+            return line.strip()[:240]
+    return None
 
 
 def compare_hardening(before, after):

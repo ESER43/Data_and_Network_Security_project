@@ -1,5 +1,4 @@
 import re
-import shlex
 import subprocess
 from pathlib import PurePosixPath
 
@@ -8,6 +7,46 @@ _HUNK_RE = re.compile(r"^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@")
 _LOCATION_RE = re.compile(r"(?P<path>(?:[A-Za-z]:)?[^\r\n:]*?\.(?:c|cc|cpp|h|hpp)):(?P<line>\d+)(?::\d+)?")
 _FRAME_PREFIX_RE = re.compile(r"^#\d+\s+\S+\s+in\s+(?P<function>[^\s]+)\s+(?P<path>.+)$")
 _HUNK_FUNCTION_RE = re.compile(r"([A-Za-z_~][\w:~.]*)\s*\(")
+_FUNCTION_KEYWORDS = {
+    "if", "for", "while", "switch", "return", "sizeof", "case", "do", "else",
+    "defined", "sizeof", "typeof", "alignof",
+}
+
+
+def _relative_diff_text(text, roots):
+    """Rewrite absolute no-index paths to source-relative ones.
+
+    Compilers report absolute paths inside each build tree, so a hunk path has to
+    be reduced to its source-relative form (``main.c``, ``src/main.c``) before a
+    stack-trace location can be matched to it.
+    """
+    for root in roots:
+        normalized = str(root).replace("\\", "/").rstrip("/")
+        if not normalized:
+            continue
+        for variant in {normalized, normalized.lstrip("/")}:
+            for marker in ("a", "b"):
+                # Git writes the marker and the absolute path with no separator
+                # (``a/mnt/...``), but relative roots keep one (``a/bench/...``).
+                text = text.replace(f"{marker}{variant}/", f"{marker}/")
+                text = text.replace(f"{marker}/{variant}/", f"{marker}/")
+    return text
+
+
+def _marker_path(line):
+    """Read the path from a ``+++``/``---`` diff marker line.
+
+    Git appends a tab before an optional timestamp and does not quote paths that
+    merely contain spaces, so splitting the line on whitespace truncates them.
+    """
+    value = line[4:]
+    if len(value) >= 2 and value.startswith('"') and value.rstrip().endswith('"'):
+        value = value.strip()[1:-1]
+        try:
+            value = value.encode("latin-1", "backslashreplace").decode("unicode_escape")
+        except (UnicodeDecodeError, UnicodeEncodeError):
+            pass
+    return value.split("\t", 1)[0].strip()
 
 
 def directory_diff(before, after):
@@ -17,7 +56,8 @@ def directory_diff(before, after):
     )
     if result.returncode not in (0, 1):
         return {"text": result.stdout + result.stderr, "hunks": [], "error": f"git diff exited {result.returncode}"}
-    return {"text": result.stdout, "hunks": parse_hunks(result.stdout), "error": None}
+    text = _relative_diff_text(result.stdout, (before, after))
+    return {"text": text, "hunks": parse_hunks(text), "error": None}
 
 
 def revision_diff(repository, before_ref, after_ref):
@@ -36,11 +76,7 @@ def parse_hunks(diff_text):
     current_path = None
     for line in diff_text.splitlines():
         if line.startswith("+++ "):
-            try:
-                fields = shlex.split(line, posix=True)
-            except ValueError:
-                fields = line.split(maxsplit=1)
-            current_path = fields[1] if len(fields) > 1 else None
+            current_path = _marker_path(line) or None
             if current_path == "/dev/null":
                 current_path = None
             elif current_path and current_path.startswith("b/"):
@@ -79,10 +115,26 @@ def _matches_changed_path(source_path, changed_path):
     )
 
 
-def _hunk_function(header):
+def _hunk_functions(header):
+    """Every identifier that could be the enclosing function named in a hunk header.
+
+    Git echoes the whole enclosing declaration, so an exported symbol such as
+    ``CJSON_PUBLIC(char*) cJSON_SetValuestring(...)`` yields the decoration macro
+    before the real function name. Keep all candidates instead of only the first.
+    """
     context = header.split("@@", 2)[-1]
-    match = _HUNK_FUNCTION_RE.search(context)
-    return match.group(1) if match else None
+    names = []
+    for match in _HUNK_FUNCTION_RE.finditer(context):
+        name = match.group(1)
+        if name in _FUNCTION_KEYWORDS or name in names:
+            continue
+        names.append(name)
+    return names
+
+
+def _hunk_function(header):
+    names = _hunk_functions(header)
+    return names[0] if names else None
 
 
 def correlate(diff, stdout, stderr, proximity=12, side="old"):
@@ -99,10 +151,12 @@ def correlate(diff, stdout, stderr, proximity=12, side="old"):
             hunk_path = hunk.get("path") or ""
             if not _matches_changed_path(location["path"], hunk_path):
                 continue
-            hunk_function = _hunk_function(hunk.get("header", ""))
+            hunk_functions = _hunk_functions(hunk.get("header", ""))
             trace_function = location.get("function")
-            same_function = bool(trace_function and hunk_function and trace_function == hunk_function)
-            if trace_function and hunk_function and not same_function:
+            hunk_function = next((name for name in hunk_functions if name == trace_function),
+                                 hunk_functions[0] if hunk_functions else None)
+            same_function = bool(trace_function and trace_function in hunk_functions)
+            if trace_function and hunk_functions and not same_function:
                 continue
             start_key = "old_start" if side == "old" else "new_start"
             count_key = "old_count" if side == "old" else "new_count"

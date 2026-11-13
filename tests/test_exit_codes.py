@@ -5,8 +5,9 @@ import unittest
 from unittest.mock import patch
 from pathlib import Path
 
+from patchguard.config import load_project
 from patchguard.errors import PatchGuardError
-from patchguard.diffing import correlate
+from patchguard.diffing import _relative_diff_text, correlate, parse_hunks
 from patchguard.evaluate import (
     _aggregate,
     _classify_fuzz_finding,
@@ -19,9 +20,11 @@ from patchguard.hardening import _nx_stack_from_program_headers
 
 class ExitCodePriorityTests(unittest.TestCase):
     def test_assignment_priority(self):
+        # The assignment orders simultaneous codes as 30, 20, 10, 40, 0.
         self.assertEqual(_aggregate([30, 10, 20, 40, 0]), 30)
-        self.assertEqual(_aggregate([10, 20]), 10)
+        self.assertEqual(_aggregate([10, 20]), 20)
         self.assertEqual(_aggregate([20, 40]), 20)
+        self.assertEqual(_aggregate([10, 40, 0]), 10)
         self.assertEqual(_aggregate([40, 0]), 40)
         self.assertEqual(_aggregate([0, 0]), 0)
 
@@ -48,6 +51,25 @@ class RegressionCorpusTests(unittest.TestCase):
             record_path.write_text(json.dumps(record), encoding="utf-8")
             with self.assertRaises(PatchGuardError):
                 _load_regression_cases(temporary, "sample-target")
+
+    def test_same_input_is_not_stored_twice(self):
+        runs = [{"failure": {"kind": "address_sanitizer", "error_type": "heap-buffer-overflow"}}
+                for _ in range(3)]
+        with tempfile.TemporaryDirectory() as temporary:
+            first = _save_regression_case(
+                temporary, "target", {"name": "seed_a", "kind": "security"}, b"same input",
+                "VULN_REMAINS", "incomplete-patch", "c1", runs, runs,
+            )
+            second = _save_regression_case(
+                temporary, "target", {"name": "seed_b", "kind": "security"}, b"same input",
+                "NEW_ISSUE", "incomplete-patch", "c2", runs, runs,
+            )
+            stored = list(Path(temporary).rglob("*.json"))
+
+        self.assertTrue(first["created"])
+        self.assertFalse(second["created"])
+        self.assertEqual(first["path"], second["path"])
+        self.assertEqual(len(stored), 1)
 
     def test_replay_classifies_fixed_and_still_vulnerable_cases(self):
         signature = ["address_sanitizer", "requested"]
@@ -118,6 +140,66 @@ class DiffCorrelationTests(unittest.TestCase):
         self.assertTrue(same_function["matches"][0]["same_function"])
         self.assertEqual(other_function["evidence_level"], "none")
         self.assertFalse(other_function["related"])
+
+
+class ConfigValidationTests(unittest.TestCase):
+    def _project(self, root, **test_overrides):
+        Path(root, "vuln").mkdir(exist_ok=True)
+        test = {"name": "sample", "kind": "functional", "stdin": "x", "expected_exit": 0}
+        test.update(test_overrides)
+        data = {"schema_version": 1, "workspace": ".", "targets": [{
+            "name": "target",
+            "versions": {"vulnerable": "vuln"},
+            "scenarios": [{"name": "scenario", "candidate": "vulnerable"}],
+            "tests": [test],
+            "build": {"release": ["cc"], "instrumented": ["cc"], "executable": "{build}/t"},
+            "timeout_seconds": 3,
+        }]}
+        path = Path(root) / "project.json"
+        path.write_text(json.dumps(data), encoding="utf-8")
+        return path
+
+    def test_malformed_values_are_config_errors(self):
+        cases = ({"expected_exit": "zero"}, {"stdin_base64": "!!!not base64!!!"},
+                 {"argv": "not-a-list"}, {"fuzz": "yes"})
+        for overrides in cases:
+            with tempfile.TemporaryDirectory() as root:
+                with self.assertRaises(PatchGuardError):
+                    load_project(self._project(root, **overrides))
+
+    def test_valid_configuration_still_loads(self):
+        with tempfile.TemporaryDirectory() as root:
+            project = load_project(self._project(root))
+        self.assertEqual(project["targets"][0]["name"], "target")
+
+
+class DiffPathParsingTests(unittest.TestCase):
+    def test_no_index_paths_with_spaces_become_source_relative(self):
+        diff = ("diff --git a/C:/tmp/Project 1/before/main.c b/C:/tmp/Project 1/after/main.c\n"
+                "--- a/C:/tmp/Project 1/before/main.c\t\n"
+                "+++ b/C:/tmp/Project 1/after/main.c\t\n"
+                "@@ -9 +9 @@ int main(void)\n")
+
+        text = _relative_diff_text(diff, ("C:/tmp/Project 1/before", "C:/tmp/Project 1/after"))
+        hunks = parse_hunks(text)
+
+        self.assertEqual(hunks[0]["path"], "main.c")
+        self.assertEqual(hunks[0]["old_start"], 9)
+
+
+class DiffCorrelationDecoratedHeaderTests(unittest.TestCase):
+    def test_export_macro_in_header_still_correlates(self):
+        diff = {"hunks": [{"path": "cJSON.c", "old_start": 409, "old_count": 1,
+                           "new_start": 409, "new_count": 1,
+                           "header": "@@ -409 +409 @@ CJSON_PUBLIC(char*) cJSON_SetValuestring(cJSON *object, const char *valuestring)"}]}
+        stderr = ("    #0 0x55d0 in cJSON_SetValuestring /tmp/build/cJSON.c:413\n"
+                  "    #1 0x55d0 in main /tmp/build/driver.c:33\n")
+
+        evidence = correlate(diff, "", stderr, side="old")
+
+        self.assertTrue(evidence["related"])
+        self.assertEqual(evidence["evidence_level"], "nearby")
+        self.assertEqual(evidence["matches"][0]["hunk_function"], "cJSON_SetValuestring")
 
 
 class ElfHardeningParsingTests(unittest.TestCase):

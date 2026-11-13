@@ -45,6 +45,13 @@
           "stdin_file": "benchmarks/inih_bridge/inputs/long_mirror.ini"
         },
         {
+          "name": "malformed_ini",
+          "kind": "functional",
+          "stdin": "[storage\npath=short\n",
+          "expected_stdout": "",
+          "expected_exit": 2
+        },
+        {
           "name": "short_valid_path",
           "kind": "functional",
           "stdin_file": "benchmarks/inih_bridge/inputs/short_path.ini",
@@ -105,6 +112,13 @@
           "stdin_file": "benchmarks/capacity_reader/inputs/overflow_alternate.txt"
         },
         {
+          "name": "malformed_capacity",
+          "kind": "functional",
+          "stdin": "not-a-number\nhello\n",
+          "expected_stdout": "",
+          "expected_exit": 2
+        },
+        {
           "name": "ordinary_capacity",
           "kind": "functional",
           "stdin_file": "benchmarks/capacity_reader/inputs/valid.txt",
@@ -163,6 +177,13 @@
           "name": "null_replacement_alternate_object",
           "kind": "security",
           "stdin_file": "benchmarks/cjson/inputs/null_replacement_alternate.txt"
+        },
+        {
+          "name": "malformed_request",
+          "kind": "functional",
+          "stdin": "no-separator\n",
+          "expected_stdout": "",
+          "expected_exit": 2
         },
         {
           "name": "ordinary_replacement",
