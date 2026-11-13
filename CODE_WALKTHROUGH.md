@@ -26,7 +26,7 @@ flowchart TD
     M -->|functional behavior regresses| O[20]
     M -->|not reproducible / evidence insufficient| P[40]
     M -->|fixed and oracle passes| Q[0]
-    L --> R[Minimize and write reproducer evidence]
+    L --> R[Minimize to the same crash site and write reproducer evidence]
     R --> S[Run deterministic fuzz mutations]
     S --> T[Compare ELF hardening]
     T --> U[Write per-scenario JSON]
@@ -54,8 +54,8 @@ The diagram simplifies an important detail: test findings, fuzz findings, build 
 ## `patchguard/config.py`
 
 - **`_need(condition, message)`** — Raises `PatchGuardError` when a configuration requirement is false.
-- **`_as_number(value)` / `_as_int(value)`** — Coerce configuration scalars, returning `None` for values that are not numbers instead of raising.
-- **Key — `load_project(path)`** — Reads and validates the JSON schema, workspace, targets, bundles/refs, build commands, scenarios, and test definitions, including numeric types (`timeout_seconds`, `fuzz_seed`, `fuzz_iterations`, `expected_exit`, `limits`), argv strings, `fuzz` booleans, and base64 payloads; returns normalized paths for execution. Every rejection is a `PatchGuardError`, which the CLI reports as exit code 30.
+- **`_as_number(value)` / `_as_int(value)`** — Coerce configuration scalars to a number or an integer; `_as_number` accepts numeric strings, `_as_int` accepts integers and integer strings, and both return `None` for booleans, floats (for `_as_int`), and unparsable values instead of raising. Every numeric check in `load_project` goes through these two so a numeric string is accepted while a fractional value is still rejected.
+- **Key — `load_project(path)`** — Reads and validates the JSON schema, workspace, targets, bundles/refs, build commands, scenarios, and test definitions, including numeric types (`timeout_seconds`, `fuzz_seed`, `fuzz_iterations`, `schema_version`, `expected_exit`, `limits`) and their accepted string forms, argv strings, `fuzz` booleans, and base64 payloads; returns normalized paths for execution. Every rejection is a `PatchGuardError`, which the CLI reports as exit code 30.
 - **`test_input(test, workspace)`** — Reads test bytes from base64, a configured file, or inline text, in that precedence order.
 
 ## `patchguard/process.py`
@@ -71,23 +71,25 @@ The diagram simplifies an important detail: test findings, fuzz findings, build 
 
 ## `patchguard/diffing.py`
 
-- **`directory_diff(before, after)`** — Gets a no-index Git diff between two source directories and parses its hunks.
+- **`_relative_diff_text(text, roots)`** — Rewrites the absolute paths of a `git diff --no-index` between two build or source trees into source-relative paths. Git writes the marker and the absolute path with no separator (`a/mnt/...`), while a relative root keeps one (`a/bench/...`), so both spellings are removed; this is what lets a compiler-reported absolute path such as `C:/tmp/Project 1/after/main.c` match a hunk recorded as `main.c`.
+- **`_marker_path(line)`** — Reads the path from a `+++`/`---` marker line, unquoting Git's quoted form when present and splitting only on the tab that precedes an optional timestamp, so a path containing spaces is not truncated at its first space.
+- **`directory_diff(before, after)`** — Gets a no-index Git diff between two source directories, rewrites its paths through `_relative_diff_text`, and parses its hunks.
 - **`revision_diff(repository, before_ref, after_ref)`** — Gets the Git diff between two refs in a repository or bundle cache.
-- **`parse_hunks(diff_text)`** — Extracts changed-file paths and old/new line ranges; preserves explicit zero counts for insertion/deletion hunks.
+- **`parse_hunks(diff_text)`** — Extracts changed-file paths and old/new line ranges; preserves explicit zero counts for insertion/deletion hunks and resets the tracked path at each `diff --git` line so the following `+++` line supplies it.
 - **`_path_parts(path)`** — Normalizes slash direction and splits a path into comparable components.
 - **`_matches_changed_path(source_path, changed_path)`** — Checks whether the changed path is a component-wise suffix of the compiler-reported source path, avoiding basename-only matches when directories are available.
 - **`_hunk_functions(header)`** — Collects every candidate function name from a hunk header. Git echoes the full enclosing declaration, so an export macro such as `CJSON_PUBLIC(char*) cJSON_SetValuestring(...)` yields `CJSON_PUBLIC` before the real function; C keywords are filtered out and all remaining names are kept.
 - **`_hunk_function(header)`** — Returns the preferred function name for reporting.
-- **Key — `correlate(diff, stdout, stderr, proximity, side)`** — Extracts C/C++ stack-trace locations and matches them to the appropriate old/new hunk ranges. Direct changed-line matches are reported; nearby matches count only when the trace function is one of the names the hunk header identifies.
+- **Key — `correlate(diff, stdout, stderr, proximity, side)`** — Extracts C/C++ stack-trace locations and matches them to the appropriate old/new hunk ranges. Direct changed-line matches are reported; nearby matches count only when the trace function is one of the names the hunk header identifies. It is also the parser used for crash-site extraction when no diff is available.
 
 ## `patchguard/evaluate.py`
 
 - **`source_fingerprint(source)`** — Computes a stable SHA-256 fingerprint over source-file paths and contents, excluding `.git` entries.
-- **`git_revision(source)`** — Returns a checked-out source directory’s commit hash, or `None` when it has no Git metadata.
+- **`file_sha256(path)`** — Streams a file through SHA-256 for binary evidence.
+- **`git_revision(source)`** — Returns a checked-out source directory's commit hash, or `None` when it has no Git metadata.
 - **`ref_revision(repository, ref)`** — Resolves a ref to a commit hash, or returns `None` if it cannot be resolved.
 - **`prepare_repository(repository, cache_root)`** — Uses a directory repository directly or clones/refreshes a bare cache from a Git bundle.
 - **`extract_ref(repository, ref, revision, root, role)`** — Exports a Git ref to an isolated source directory after rejecting unsafe archive paths and links.
-- **`file_sha256(path)`** — Streams a file through SHA-256 for binary evidence.
 - **Key — `_aggregate(codes)`** — Applies the assignment’s priority: 30, then 10, 20, 40, and finally 0, so a remaining security finding outranks a functional regression.
 - **`_trim_observation(observation)`** — Bounds stdout/stderr stored in the report and marks truncated output.
 - **`_run_many(executable, test, data, target, repetitions)`** — Executes the same test repeatedly and trims each observation.
@@ -96,18 +98,21 @@ The diagram simplifies an important detail: test findings, fuzz findings, build 
 - **`_safe_component(value)`** — Converts names to filesystem-safe path components.
 - **`_load_regression_cases(corpus_root, target_name)`** — Loads corpus JSON, validates hashes/signatures/target, and prepares each stored case as a security test.
 - **`_valid_signature(signature)`** — Checks that a saved failure signature has the expected three-run shape and value types.
-- **`_find_stored_case(corpus_root, target_name, digest)`** — Returns an existing corpus file for the same target and input hash, so different seeds or scenarios cannot store the same input twice.
-- **`_save_regression_case(...)`** — Writes a newly confirmed minimized input, its hash, source scenario/revision, and baseline/candidate signatures without overwriting or duplicating an existing case.
+- **`_find_stored_case(corpus_root, target_name, digest)`** — Returns an existing corpus file for the same target and input hash, whatever test first discovered it, so different seeds or scenarios cannot store the same input twice.
+- **`_save_regression_case(...)`** — Writes a newly confirmed minimized input, its hash, source scenario/revision, and baseline/candidate signatures without overwriting or duplicating an existing case; the record is written through a temporary file and renamed so a partial write cannot leave an invalid corpus entry.
 - **`_matches_expected(run, test)`** — Checks a functional run’s expected exit code and exact or contained stdout, requiring no detected failure.
+- **`_crash_site_for_run(run, source)`** — Correlates one failing run’s trace and returns the first frame inside the given source snapshot as a source-relative `{file, line, function}`; frames from libraries or other build trees are skipped, so a library crash cannot masquerade as a target crash.
+- **`_crash_site(runs, source=None)`** — Returns a crash site for a set of runs. Without a source it keeps the historical first-location behavior used by fuzz classification; with a source it requires a target-local frame for every failing run and returns a single site only when all failing runs share one identity.
+- **`_crash_site_identity(site)`** — Reduces a site to a comparable identity: `(file, function)` when a function name is available, otherwise `(file, line)`, because line tables shift between builds but a function name does not.
+- **`_failure_matches_site(run, expected_kind, expected_type, expected_site, source)`** — Predicate used by minimization and replay: the run must fail with the same kind and error type and report the same target-local crash-site identity.
 - **`_correlation_state(diff, runs, side)`** — Correlates the first detected failure’s trace with the old or new diff side and attaches its failure type.
-- **`_crash_site(runs)`** — Reduces a failing run to the first reported source file, line, and function so two crashes can be compared by site.
-- **Key — `_evaluate_test(...)`** — Runs a test on baseline/candidate release and instrumented builds, then classifies functional behavior, security fixes, remaining flaws, new issues, or inconclusive evidence.
+- **Key — `_evaluate_test(...)`** — Runs a test on baseline/candidate release and instrumented builds, then classifies functional behavior, security fixes, remaining flaws, new issues, or inconclusive evidence. Stored corpus cases are classified by comparing the candidate against the recorded signature rather than re-deriving expectations.
 - **`_binary_record(executable)`** — Records the executed binary’s path, size, and SHA-256 (or why it is unavailable) for the reproducer bundle.
-- **`_write_reproducer(...)`** — Minimizes a security input while preserving its failure signature, replays it, and writes JSON containing original and minimized inputs with hashes, the binary hash, command, build/runtime/host environment, commit, source fingerprint, resource limits, replay stability, and observations. Minimization is memoized in `_MINIMIZATION_CACHE` by binary SHA-256, input SHA-256, and expected finding, because the same baseline reproducer is regenerated for every scenario of a target.
-- **`reproduces(candidate)`** *(nested in `_write_reproducer`)* — Reruns a minimized candidate input and accepts it only if the same failure kind/type remains.
+- **Key — `_write_reproducer(...)`** — Minimizes a security input while preserving its failure signature *and* its crash site, then replays it and writes JSON containing original and minimized inputs with hashes, the binary hash, command, build/runtime/host environment, commit, source fingerprint, resource limits, replay stability, and observations. Minimized input is accepted only when the same failure kind/type is still reported at the original target-local file/function site; otherwise the original input is kept and `crash_site_preserved` records that the reduction was rejected. Minimization is memoized in `_MINIMIZATION_CACHE` by binary SHA-256, input SHA-256, expected finding, and crash-site identity, because the same baseline reproducer is regenerated for every scenario of a target.
+- **`reproduces(candidate)`** *(nested in `_write_reproducer`)* — Reruns a minimized candidate input and accepts it only if the same failure kind/type remains at the expected crash site.
 - **Key — `_classify_fuzz_finding(baseline_runs, candidate_runs, diff)`** — Compares stable baseline and candidate failure signatures; an unstable baseline is inconclusive rather than being mislabeled as a new issue. Identical failure classes count as `VULN_REMAINS` only when the crash site matches or the candidate crash correlates with the patch; otherwise the input exposes a pre-existing defect and is recorded as `PRE_EXISTING_UNRELATED`.
 - **Key — `_fuzz_candidate(...)`** — Mutates configured fuzz seeds deterministically, repeats candidate/baseline runs, minimizes findings, stores confirmed regression cases, and returns the evidence records.
-- **Key — `_evaluate_scenario(...)`** — Resolves baseline/candidate sources, diffs and builds both modes, runs regular and corpus tests, fuzzes, inspects hardening, then returns one scenario report and status. Only attributed fuzz findings (`VULN_REMAINS`, `NEW_ISSUE`) contribute exit code 10; unstable and pre-existing findings stay in the report without forcing an inconclusive verdict.
+- **Key — `_evaluate_scenario(...)`** — Resolves baseline/candidate sources, diffs and builds both modes, runs regular and corpus tests, fuzzes, inspects hardening, then returns one scenario report and status. Corpus replay skips any stored input that a configured test already covers, and only configured tests (not replayed cases) may add new corpus entries. Only attributed fuzz findings (`VULN_REMAINS`, `NEW_ISSUE`) contribute exit code 10; unstable and pre-existing findings stay in the report without forcing an inconclusive verdict.
 - **Key — `evaluate_project(...)`** — Selects targets/scenarios, calls `_evaluate_scenario` for each, catches per-scenario configuration/execution failures, and aggregates the project report and exit code.
 
 ## `patchguard/fuzz.py` and `patchguard/minimize.py`
@@ -118,6 +123,7 @@ The diagram simplifies an important detail: test findings, fuzz findings, build 
 ## `patchguard/hardening.py`
 
 - **Key — `inspect_elf(executable)`** — Uses `readelf` to inspect PIE, NX stack, RELRO, and stack-canary properties of one binary.
+- **`_line_with(text, needle)`** — Returns the first `readelf` line containing a search term, trimmed and length-bounded, so each property records the evidence line it came from.
 - **Key — `compare_hardening(before, after)`** — Compares baseline and candidate protections and reports weakened properties as warnings.
 - **`_readelf(args, executable)`** — Runs one `readelf` query and returns availability, exit status, and output.
 - **`_nx_stack_from_program_headers(program_headers)`** — Determines whether the GNU_STACK program header permits execution.
@@ -131,9 +137,18 @@ The diagram simplifies an important detail: test findings, fuzz findings, build 
 
 - **`ExitCodePriorityTests.test_assignment_priority()`** — Checks the required aggregate priority for codes 30, 10, 20, 40, and 0.
 - **`RegressionCorpusTests.test_confirmed_finding_round_trips_and_validates()`** — Checks writing/loading a corpus case and rejecting a tampered input hash.
+- **`RegressionCorpusTests.test_same_input_is_not_stored_twice()`** — Checks that two discoveries of the same input under different test names and scenarios resolve to one corpus file.
 - **`RegressionCorpusTests.test_replay_classifies_fixed_and_still_vulnerable_cases()`** — Checks stored cases become `FIXED` or `VULN_REMAINS` from replay observations.
 - **`FuzzClassificationTests.test_unstable_baseline_does_not_become_new_issue()`** — Guards against calling an issue “new” when the baseline itself fails inconsistently.
+- **`FuzzClassificationTests.test_stable_same_site_finding_is_classified_without_source_argument()`** — Checks that a stable finding at the same site is still `VULN_REMAINS` when no source snapshot is supplied to the crash-site comparison.
 - **`DiffCorrelationTests.test_nearby_match_requires_same_function()`** — Ensures a nearby trace in another function of the same file is not treated as causal correlation.
+- **`ConfigValidationTests._project(root, **test_overrides)`** — Builds a minimal valid project configuration on disk, with optional overrides, for the configuration tests.
+- **`ConfigValidationTests.test_malformed_values_are_config_errors()`** — Checks that a non-numeric `expected_exit`, invalid base64, a non-list `argv`, and a non-boolean `fuzz` are rejected as configuration errors.
+- **`ConfigValidationTests.test_valid_configuration_still_loads()`** — Checks that the minimal project still loads after validation was tightened.
+- **`ConfigValidationTests.test_integer_fields_accept_numeric_strings_and_reject_floats()`** — Checks that `schema_version`, `fuzz_seed`, `fuzz_iterations`, `limits` values, and `expected_exit` accept integer strings but reject fractional numbers.
+- **`MinimizationLocationTests.test_minimization_match_requires_original_file_and_function()`** — Checks that a reduced input only counts as reproducing when both the original file and the original function match, not just the same failure class.
+- **`MinimizationLocationTests.test_reproducer_keeps_input_if_reduced_crash_moves_function()`** — Checks that a reduction whose crash moves to another function is rejected and the unreduced input is kept, with `crash_site_preserved` reporting it.
+- **`DiffPathParsingTests.test_no_index_paths_with_spaces_become_source_relative()`** — Checks that absolute no-index paths containing spaces are rewritten to the hunk’s source-relative path with the correct line numbers.
 - **`DiffCorrelationDecoratedHeaderTests.test_export_macro_in_header_still_correlates()`** — Ensures a hunk header decorated with an export macro still matches the real enclosing function (the upstream cJSON case).
 - **`ElfHardeningParsingTests.test_nx_uses_gnu_stack_permissions()`** — Checks NX classification from GNU_STACK permissions, including missing-header behavior.
 
@@ -153,3 +168,5 @@ The many target-source files represent repository snapshots and patch variants; 
 ## Interpretation note
 
 `nearby_line` is included in `related` only when both the sanitizer frame and Git hunk identify the same function. Frames from a different function in the same source file are no longer treated as correlation evidence. Reports include the trace function, hunk function, path, line, and relation so the reviewer can assess the link. Hunk headers often repeat the whole declaration (`CJSON_PUBLIC(char*) cJSON_SetValuestring(...)`), so every identifier that precedes an opening parenthesis is considered, with C keywords removed, instead of trusting only the first one.
+
+Crash-site identity follows the same idea: minimization and corpus replay compare `(file, function)` for the target-local frame, falling back to `(file, line)` only when the compiler reported no function name. That keeps a reduced reproducer tied to the original defect instead of merely to the original sanitizer error class.
